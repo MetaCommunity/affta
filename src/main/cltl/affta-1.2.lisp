@@ -65,9 +65,7 @@
 
 
 (defgeneric do-test (params expect test)
-  (:method :around ((params list)
-                    (expect list)
-                    (test values-test))
+  (:method :around (params expect test)
            (do-test-setup params test) ;; frobbed :BEFORE method
            (let ((results
                   (unwind-protect
@@ -82,8 +80,9 @@
                         (find-class 'test-succeeded))
                        (t (find-class 'test-failed)))
                      :test test
-                     :parameters (list a b)
+                     :parameters params
                      :results results)))
+
 
   (:method ((params list) (expect list)
             (test diadic-values-test))
