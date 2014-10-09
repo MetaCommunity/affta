@@ -16,9 +16,12 @@
 (defclass test (labeled-object)
   ())
 
-
 (defmethod format-test-label ((test test) (stream stream))
   (princ-label test stream))
+
+(defmethod label ((object test))
+  (with-output-to-string (s)
+    (format-test-label test s)))
 
 (defmethod print-object ((test test) stream)
   (print-unreadable-object (test stream :type t :identity t)
