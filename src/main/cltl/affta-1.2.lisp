@@ -1,6 +1,34 @@
 (in-package #:test)
 
 
+(defgeneric test-setup-function (test)
+  ;; trivial test setup protocol
+  ;;
+  ;; (values (or null function))
+  ;;
+  ;; if a function, must accept two arguments:
+  ;;  1) list of parameters provided to the test
+  ;;  2) test object
+  ;;
+  ;; function would be called before the test's primary method is
+  ;; evaluated within DO-TEST
+  (:method ((test test))
+    (values nil)))
+
+(defgeneric test-cleanup-function (test)
+  ;; trivial test cleanup protocol
+  ;;
+  ;; (values (or null function))
+  ;;
+  ;; if a function, must accept two arguments:
+  ;;  1) list of parameters provided to the test
+  ;;  2) test object
+  ;;
+  ;; function would be called within the cleanup forms of an
+  ;; unwind-protect form within DO-TEST
+  (:method ((test test))
+    (values nil)))
+
 (defgeneric do-test-setup (params test)
   (:method (params (test test))
     ;; a trivial system-supplied primary method
@@ -8,6 +36,7 @@
     ;; only when test has a SETUP-FUNCTION
 
     ;; FIXME: Alternately, ensure that DEFTEST
+
     ;; defines a primary method onto DO-TEST-SETUP
     ;; when a :SETUP form is provided
     (let ((fn (test-setup-function test)))
@@ -71,4 +100,4 @@
 
 ;; prototype for test eval:
 ;;
-;; (do-test '(2 2) '(4) (mktest #'expt))
+;; (do-test '(2 2) '(4) #'expt)
