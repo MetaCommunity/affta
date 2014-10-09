@@ -2,7 +2,7 @@
 
 
 (defgeneric do-test-setup (params test)
-  (:method :around (params (test test))
+  (:method (params (test test))
     ;; a trivial system-supplied primary method
     ;; dispatching to a seperate function
     ;; only when test has a SETUP-FUNCTION
@@ -15,7 +15,7 @@
         (funcall fn params test)))))
 
 (defgeneric do-test-cleanup (params test)
-  (:method :around (params (test test))
+  (:method (params (test test))
     ;; a trivial system-supplied primary method
     ;; dispatching to a seperate function
     ;; only when test has a CLEANUP-FUNCTION
