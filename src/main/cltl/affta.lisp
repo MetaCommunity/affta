@@ -31,7 +31,6 @@
     ;; on a sidebar, with this slot definition interpreted as a
     ;; predicate, this may resemble the RDF:LABEL property
     :initarg :label
-    :type (or string null)
     :initform nil
     :accessor labeled-object-label)))
 
@@ -84,7 +83,6 @@
 
 
 (defmethod format-test-condition ((condition test-failed)
-                                  (test test)
                                   (stream stream))
   ;; FIXME/TO-DO: #I18N for condition/reporter format control strings
   (princ "Test failed" stream))
@@ -96,7 +94,6 @@
 
 
 (defmethod format-test-condition ((condition test-succeeded)
-                                  (test test)
                                   (stream stream))
   ;; FIXME/TO-DO: #I18N for condition/reporter format control strings
   (princ "Test succeeded" stream))
@@ -114,8 +111,7 @@
    (test-function
     :type function
     :initarg :function
-    :accessor test-function
-    :type function)
+    :accessor test-function)
    )
   (:documentation
 "A predicate is defined for application in a predicate test session,
@@ -272,8 +268,54 @@ function to the predicate.")
     :accessor test-cleanup-function)
    ))
 
+
+(defmacro deftest (name (&rest args
+                               &key (class 'diadic-predicate-test)
+                               &allow-other-keys)
+                                 body
+                   &environment env)
+    (macrolet ((pop-arg (name &optional errorp)
+                 (with-gensum (v default)
+                   `(let ((,v (getf args ,name (quote ,default))))
+                      (cond
+                        ((eq ,v (quote ,default))
+                         (cond
+                           ;; FIXME: #I18N
+                           (errorp (error "Required argument ~S not provided: ~<~S~>"
+                                          ,name args))
+                           (t (values nil nil))))
+                        (t (multiple-value-prog1 (values ,v t)
+                             (setf args (delf args ,name)))))))))
+      (labels ((mk-kwd (a b)
+                 (intern (format nil "~A-~A" a b)
+                         (quote #:keyword)))
+               (lambda-if (arg)
+                 (let ((form-arg (mk-kwd arg (quote #:form)))
+                       (fn-arg (mk-kwd art (quote #:function))))
+                   (multiple-value-bind (form foundp)
+                       (pop-arg arg)
+                     (when foundp
+                       (list form-arg form
+                             fn-arg `(lambda () ,@form)))))))
+        (with-gensym (test)
+          `(let ((,test (make-instance ,(pop-arg class t)
+                                       ,@(lambda-if :setup)
+                                       ,@(lambda-if :cleanup)
+                                       ,@args
+                                       :label (quote ,name)
+                                       :environment ,env)))
+             (register-test ,test)
+             (vaules ,test))))))
+
+#+NIL
+(deftest #:deftest-test ()
+  (
+))
+
+;; test output
+
 (defmethod format-test-label ((test test) (stream stream))
-  (let ((label ((labeled-object-label test))))
+  (let ((label (labeled-object-label test)))
     (princ (or label %unnamed%)
            stream)))
 
@@ -281,8 +323,11 @@ function to the predicate.")
   (print-unreadable-object (test stream :type t :identity t)
     (format-test-label test stream)))
 
-(defgeneric run-test (test)
-  (:method :around ((test test))
+;; test application
+
+(defgeneric run-test (test &rest data &key &allow-other-keystest)
+  (:method :around ((test test) &rest data &key &allow-other-keys)
+           (declare (ignore data))
      (let ((pre-test-form (test-pre-test-form test)))
        (when pre-test-form
          (funcall (test-pre-test-function test))))
@@ -293,7 +338,9 @@ function to the predicate.")
            (funcall (test-cleanup-function test)))))))
 
 
-(defclass values-test (labeled-object)
+;;;; Values-Test
+
+(defclass values-test (test)
   ((expect-values
     :initarg :expect
     :accessor test-expect-values)
@@ -309,6 +356,8 @@ function to the predicate.")
           (test-expect-values test)
           (test-results-test test)))
 
+
+;;;; Predicate-Test
 
 (defclass predicate-test (values-test)
   ;; NOTE: The definition of monadic, diadic, and variadic predicate
@@ -331,7 +380,7 @@ function to the predicate.")
     (cond
       (nmp
        ;; FIXME: The semantics of predicates and results-tests
-       ;; may seemunnerving.
+       ;; may need description
        (let* ((result-values (multiple-value-list (call-next-method)))
               (expect-values (test-expect-values test))
               (result-okidoke-p
@@ -346,6 +395,7 @@ function to the predicate.")
                              test)))))
 
 
+;;;; Diadic-Predicate-Test
 
 (defclass diadic-predicate-test (prediate-test)
   ((datum-a
@@ -367,13 +417,15 @@ function to the predicate.")
 
 
 
-(defmethod run-test ((test diadic-predicate-test))
+(defmethod run-test ((test diadic-predicate-test)
+                     &rest data &key &allow-other-keys)
   (let ((a (test-datum-a test))
         (b (test-datum-b test)))
     (funcall (the function (test-predicate test))
              a b)))
 
 
+;;;; Monadic-Predicate-Test
 
 (defclass monadic-predicate-test (prediate-test)
   ((datum
@@ -390,12 +442,13 @@ function to the predicate.")
           (test-expect-values test)
           (test-results-test test)))
 
-(defmethod run-test ((test monadic-predicate-test))
+(defmethod run-test ((test monadic-predicate-test)
+                     &rest data &key &allow-other-keys)
   (let ((a (test-datum test)))
     (funcall (the function (test-predicate test))
              a)))
 
-
+;;;; Variadic-Predicate-Test
 
 (defclass variadic-predicate-test (prediate-test)
   ((data
@@ -412,7 +465,8 @@ function to the predicate.")
           (test-results-test test)))
 
 
-(defmethod run-test ((test variadic-predicat-test))
-  (let ((data (test-data test)))
+(defmethod run-test ((test variadic-predicate-test)
+                     &rest data &key &allow-other-keys)
+  (let ((test-data (test-data test)))
     (apply (the function (test-predicate test))
-           data)))
+           test-data)))
