@@ -55,7 +55,7 @@
 
 
 (defmacro deftest (name (&rest args
-                               &key (class 'diadic-predicate-test)
+                               &key (class 'diadic-values-test)
                                &allow-other-keys)
                                  body
                    &environment env)
@@ -99,7 +99,7 @@
 ;;  (macroexpand-1
 ;;   (quote
     (deftest #:deftest-test
-        (:class 'diadic-predicate-test
+        (:class 'diadic-values-test
                 :setup (setq foo-interface-active-p t)
                 :predicate (quote =)
                 :expect 4 ;; FIXME: move into test data
@@ -124,6 +124,7 @@
 
 ;; test application
 
+#+NIL
 (defgeneric run-test (test &rest data &key &allow-other-keystest)
   ;; FIXME: Move documentation; remove this function; use test-protocol.lisp
 
@@ -165,7 +166,7 @@
 (defgeneric test-predicate (test)
   (:method ((test function))
     (values %default-equivalence-function%)))
-;; 
+
 (defclass values-test (test)
   ((expect-values
     :initarg :expect
@@ -183,58 +184,12 @@
           (test-predicate test)))
 
 
-;;;; Predicate-Test
+;;;; Diadic-Values-Test
 
-(defclass predicate-test (values-test)
-  ;; FIXME @important! Remove this class
+(defclass diadic-values-test (values-test)
+  ())
 
-  ;; NOTE: The definition of monadic, diadic, and variadic predicate
-  ;; tests is developed primarily around the matter of how the
-  ;; TEST-PREDICATE function would be FUNCALL'ed
-  ((predicate
-   ;; FIXME: PREDICATE is redundant onto PREDICATE
-    :type function
-    :initarg :predicate
-    :accessor test-predicate)))
-
-
-(defmethod format-test-label :around ((test predicate-test) (stream stream))
-  (call-next-method*)
-  (princ #\Space stream)
-  (princ (test-predicate test) stream))
-
-(defmethod run-test :around ((test predicate-test)
-                             &rest data &key &allow-other-keys)
-  (let ((nmp (next-method-p)))
-    (cond
-      (nmp
-       ;; FIXME: The semantics of predicates and predicates
-       ;; may need description
-       (let* ((result-values (multiple-value-list (call-next-method)))
-              (expect-values (test-expect-values test))
-              (result-okidoke-p
-               (funcall (test-predicate test)
-                        result-values expect-values)))
-         (cond
-           (result-okiedoke-p
-            (signal 'test-succeeded :test test :parameters data))
-           (t (signal 'test-failed :test test :parameters data)))))
-      (t
-       (simple-program-error "No primary test metod defined for ~S"
-                             test)))))
-
-
-;;;; Diadic-Predicate-Test
-
-(defclass diadic-predicate-test (predicate-test)
-  ((datum-a
-    :initarg :datum-a
-    :accessor test-datum-a)
-   (datum-b
-    :initarg :datum-b
-    :accessor test-datum-b)))
-
-(defmethod format-test-label ((test diadic-predicate-test)
+(defmethod format-test-label ((test diadic-values-test)
                               (stream stream))
   (princ-label test stream)
   (format stream "(~A ~A ~A) => (~{ ~A~} ) ~A"
@@ -245,24 +200,12 @@
           (test-predicate test)))
 
 
+;;;; Monadic-Values-Test
 
-(defmethod run-test ((test diadic-predicate-test)
-                     &rest data &key &allow-other-keys)
-  (let ((a (test-datum-a test))
-        (b (test-datum-b test)))
-    (funcall (the function (test-predicate test))
-             a b)))
+(defclass monadic-values-test (values-test)
+  ())
 
-
-;;;; Monadic-Predicate-Test
-
-(defclass monadic-predicate-test (predicate-test)
-  ((datum
-    :initarg :datum
-    :accessor test-datum)))
-
-
-(defmethod format-test-label ((test monadic-predicate-test)
+(defmethod format-test-label ((test monadic-values-test)
                               (stream stream))
   (princ-label test stream)
   (format stream "(~A ~A) => (~{ ~A~} ) ~A"
@@ -271,20 +214,13 @@
           (test-expect-values test)
           (test-predicate test)))
 
-(defmethod run-test ((test monadic-predicate-test)
-                     &rest data &key &allow-other-keys)
-  (let ((a (test-datum test)))
-    (funcall (the function (test-predicate test))
-             a)))
 
-;;;; Variadic-Predicate-Test
+;;;; Variadic-Values-Test
 
-(defclass variadic-predicate-test (predicate-test)
-  ((data
-    :initarg :datum
-    :accessor test-data)))
+(defclass variadic-values-test (values-test)
+  ())
 
-(defmethod format-test-label ((test monadic-predicate-test)
+(defmethod format-test-label ((test monadic-values-test)
                               (stream stream))
   (princ-label test stream)
   (format stream "(~A~{ ~A~}) => (~{ ~A~} ) ~A"
@@ -293,9 +229,3 @@
           (test-expect-values test)
           (test-predicate test)))
 
-
-(defmethod run-test ((test variadic-predicate-test)
-                     &rest data &key &allow-other-keys)
-  (let ((test-data (test-data test)))
-    (apply (the function (test-predicate test))
-           test-data)))
