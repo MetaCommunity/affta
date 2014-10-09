@@ -1,43 +1,36 @@
 (in-package #:test)
 
 
-(defvar *this*)
-
-
-(defgeneric do-diadic-test (a b expect pred fn)
-  (:method :around (a b expect pred fn)
+(defgeneric do-test (params expect test)
+  (:method :around ((params list)
+                    (expect list)
+                    (test values-test))
            (let ((results (multiple-value-list
-                           (call-next-method))))
+                           (call-next-method)))
+                 (pred (test-predicate-function test)))
              (signal (cond
                        ((funcall pred results expect)
                         (find-class 'test-succeeded))
                        (t (find-class 'test-failed)))
-                     :test *this*
+                     :test test
                      :parameters (list a b)
                      :results results)))
-  (:method (a b expect pred fn)
-    (funcall fn a b)))
 
+  (:method ((params list) (expect list)
+            (test diadic-parameters-test))
+    (declare (ignore expect))
+    (destructuring-bind (a b) params
+      (funcall (test-main-function test)
+               a b)))
 
-(defun do-monadic-test (a expect pred fn)
-  (let ((results (multiple-value-list
-                  (funcall fn a))))
-    (signal (cond
-              ((funcall pred results expect)
-               (find-class 'test-succeeded))
-              (t (find-class 'test-failed)))
-            :test *this*
-            :parameters (list a)
-            :results results)))
+  (:method ((params list) (expect list)
+            (test monadic-parameters-test))
+    (declare (ignore expect))
+    (destructuring-bind (a) params
+      (funcall (test-main-function test)
+               a)))
 
-
-(defun do-variadic-test (values expect pred fn)
-  (let ((results (multiple-value-list
-                  (apply fn values))))
-    (signal (cond
-              ((funcall pred results expect)
-               (find-class 'test-succeeded))
-              (t (find-class 'test-failed)))
-            :test *this*
-            :parameters (list a)
-            :results results)))
+  (:method ((params list) (expect list)
+            (test variadic-parameters-test))
+    (declare (ignore expect))
+    (apply (test-main-function test) params)))
