@@ -316,11 +316,12 @@ function to the predicate.")
         (:class 'diadic-predicate-test
                 :setup (setq foo-interface-active-p t)
                 :predicate (quote =)
-                :e
+                :expect 4 ;; FIXME: move into test data
                 )
       (cond
         (foo-interface-active-p
-         (expt 2 2))
+         (expt 2 2) ;; FIXME: move into test data
+         )
         (t (quote #:fail)))))
 ;;   ))
 
@@ -349,7 +350,7 @@ function to the predicate.")
   ;; individual test data.
   ;;
   ;; Both of those concerns may be resolved simply with an
-  ;; applicatioin of generic functions.
+  ;; application of generic functions.
   ;;  1) Revise DEFTEST such that it effectively provides an interface
   ;;     onto DEFMETHOD <FOO>
   ;;  2) Ensure that a test interface's 'setup' and 'cleanup' forms
