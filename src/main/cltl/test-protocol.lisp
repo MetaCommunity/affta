@@ -82,7 +82,7 @@
                     ;; does not encapsulate CALL-NEXT-METHOD within
                     ;; an UNWIND-PROTECT form
                     (do-test-cleanup params test)))
-                 (pred (test-predicate-function test)))
+                 (pred (test-predicate test)))
              (signal (cond
                        ((funcall pred results expect)
                         (find-class 'test-succeeded))

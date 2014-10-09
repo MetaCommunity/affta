@@ -14,9 +14,15 @@
 ;;;; Test
 
 (defclass test (labeled-object)
-  ((environment
+  (;;; FIXME: Remove the following slot definitions,
+   ;; optionally revising for the TEST to make reference
+   ;; onto primary methods within DO-TEST, DO-TEST-SETUP, and
+   ;; DO-TEST-CLEEANUP
+
+   (environment
     :initarg :environment
     :accessor test-environment)
+
 
    (body
     :initarg :body
@@ -53,6 +59,7 @@
                                &allow-other-keys)
                                  body
                    &environment env)
+  ;; FIXME: Revise this method per test-protocol.lisp
     (macrolet ((pop-arg (kwd &optional defv)
                  (with-gensym (v default)
                    `(let ((,v (getf args ,kwd (quote ,default))))
@@ -118,6 +125,8 @@
 ;; test application
 
 (defgeneric run-test (test &rest data &key &allow-other-keystest)
+  ;; FIXME: Move documentation; remove this function; use test-protocol.lisp
+
   ;; FIXME: Encapsulating the test data wtihin a test object
   ;; may not be "the best approach". Test data, alternately,
   ;; may be encapsulated within a TEST-CONDITION, thus allowing for a
@@ -149,31 +158,41 @@
 
 ;;;; Values-Test
 
+(declaim (type function %default-equivalence-function%))
+
+(defvar %default-equivalence-function% #'equalp)
+
+(defgeneric test-predicate (test)
+  (:method ((test function))
+    (values %default-equivalence-function%)))
+;; 
 (defclass values-test (test)
   ((expect-values
     :initarg :expect
     :accessor test-expect-values)
-   (results-test
-    :initarg :results-test
-    :initform #'equalp
-    :accessor test-results-test)))
+   (predicate
+    :initarg :predicate
+    :initform %default-equivalence-function%
+    :accessor test-predicate)))
 
 
 (defmethod format-test-label :around ((test values-test) (stream stream))
   (call-next-method*)
   (format stream " => (~{ ~A~} ) ~A"
           (test-expect-values test)
-          (test-results-test test)))
+          (test-predicate test)))
 
 
 ;;;; Predicate-Test
 
 (defclass predicate-test (values-test)
+  ;; FIXME @important! Remove this class
+
   ;; NOTE: The definition of monadic, diadic, and variadic predicate
   ;; tests is developed primarily around the matter of how the
   ;; TEST-PREDICATE function would be FUNCALL'ed
   ((predicate
-   ;; FIXME: PREDICATE is redundant onto RESULTS-TEST
+   ;; FIXME: PREDICATE is redundant onto PREDICATE
     :type function
     :initarg :predicate
     :accessor test-predicate)))
@@ -189,12 +208,12 @@
   (let ((nmp (next-method-p)))
     (cond
       (nmp
-       ;; FIXME: The semantics of predicates and results-tests
+       ;; FIXME: The semantics of predicates and predicates
        ;; may need description
        (let* ((result-values (multiple-value-list (call-next-method)))
               (expect-values (test-expect-values test))
               (result-okidoke-p
-               (funcall (test-results-test test)
+               (funcall (test-predicate test)
                         result-values expect-values)))
          (cond
            (result-okiedoke-p
@@ -223,7 +242,7 @@
           (test-datum-a test)
           (test-datum-b test)
           (test-expect-values test)
-          (test-results-test test)))
+          (test-predicate test)))
 
 
 
@@ -250,7 +269,7 @@
           (test-predicate test)
           (test-datum test)
           (test-expect-values test)
-          (test-results-test test)))
+          (test-predicate test)))
 
 (defmethod run-test ((test monadic-predicate-test)
                      &rest data &key &allow-other-keys)
@@ -272,7 +291,7 @@
           (test-predicate test)
           (test-data test)
           (test-expect-values test)
-          (test-results-test test)))
+          (test-predicate test)))
 
 
 (defmethod run-test ((test variadic-predicate-test)
