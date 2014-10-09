@@ -179,6 +179,8 @@
 (defgeneric format-condition (condition stream))
 
 (define-condition encapsulated-condition ()
+  ;; This class might be semantically similar to CELL-ERROR, but does
+  ;; not include ERROR in its class precedence list
   ((object
     :initarg :condition
     :accessor encapsulated-condition-object)))
@@ -189,17 +191,26 @@
     :initform %application%
     :reader application-condition-application))
   (:report
-   (lambda (c s) (format-condition c s)))))))
+   (lambda (c s) (format-condition c s))))
 
 (defmethod format-condition ((condition application-condition)
                              (stream stream))
   ;; FIXME: #I18N
-  (format s "~<Encapsulated condition within ~S:~> ~<~S~>"
-          (applicaiton-condition-application c)
-          (encapsulated-condition-object c)))
+  (format stream "~<Encapsulated condition within ~A:~> ~<~A~>"
+          (application-condition-application condition)
+          (encapsulated-condition-object condition)))
 
 (define-condition application-error (error application-condition)
   ())
+
+#+NIL
+(handler-case
+    (simple-program-error "Ping ping ping ping ~s" (get-universal-time))
+  (error (c)
+    (error 'application-error 
+           :application "Foo top level foo" 
+           :condition c)))
+
 
 (define-condition application-warning (warning application-condition)
   ())
