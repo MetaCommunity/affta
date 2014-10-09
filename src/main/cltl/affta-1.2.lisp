@@ -4,7 +4,7 @@
 (defgeneric test-setup-function (test)
   ;; trivial test setup protocol
   ;;
-  ;; (values (or null function))
+  ;; (values (or null function) boolean)
   ;;
   ;; if a function, must accept two arguments:
   ;;  1) list of parameters provided to the test
@@ -13,12 +13,15 @@
   ;; function would be called before the test's primary method is
   ;; evaluated within DO-TEST
   (:method ((test test))
-    (values nil)))
+    (cond
+      ((slot-boundp test 'setup-function)
+       (values (test-setup-function test) t))
+      (values nil nil))))
 
 (defgeneric test-cleanup-function (test)
   ;; trivial test cleanup protocol
   ;;
-  ;; (values (or null function))
+  ;; (values (or null function) boolean)
   ;;
   ;; if a function, must accept two arguments:
   ;;  1) list of parameters provided to the test
@@ -27,7 +30,10 @@
   ;; function would be called within the cleanup forms of an
   ;; unwind-protect form within DO-TEST
   (:method ((test test))
-    (values nil)))
+    (cond
+      ((slot-boundp test 'cleanup-function)
+       (values (test-cleanup-function test) t))
+      (values nil nil))))
 
 (defgeneric do-test-setup (params test)
   (:method (params (test test))
@@ -36,11 +42,11 @@
     ;; only when test has a SETUP-FUNCTION
 
     ;; FIXME: Alternately, ensure that DEFTEST
-
     ;; defines a primary method onto DO-TEST-SETUP
     ;; when a :SETUP form is provided
-    (let ((fn (test-setup-function test)))
-      (when fn
+    (multiple-value-bind (fn setup-p)
+        (test-setup-function test)
+      (when setup-p
         (funcall fn params test)))))
 
 (defgeneric do-test-cleanup (params test)
@@ -52,8 +58,9 @@
     ;; FIXME: Alternately, ensure that DEFTEST
     ;; defines a primary method onto DO-TEST-CLEANUP
     ;; when a :cleanup form is provided
-    (let ((fn (test-cleanup-function test)))
-      (when fn
+    (multiple-value-bind (fn cleanup-p)
+        (test-cleanup-function test)
+      (when cleanup-p
         (funcall fn params test)))))
 
 
@@ -79,23 +86,32 @@
                      :results results)))
 
   (:method ((params list) (expect list)
-            (test diadic-parameters-test))
+            (test diadic-values-test))
     (declare (ignore expect))
     (destructuring-bind (a b) params
       (funcall (test-main-function test)
                a b)))
 
   (:method ((params list) (expect list)
-            (test monadic-parameters-test))
+            (test monadic-values-test))
     (declare (ignore expect))
     (destructuring-bind (a) params
       (funcall (test-main-function test)
                a)))
 
   (:method ((params list) (expect list)
-            (test variadic-parameters-test))
+            (test variadic-values-test))
     (declare (ignore expect))
-    (apply (test-main-function test) params)))
+    (apply (test-main-function test) params))
+
+
+  #+TO-DO
+  (:method ((params list) (expect symbol)
+            (test expect-condition-test))
+
+    )
+
+  )
 
 
 ;; prototype for test eval:
