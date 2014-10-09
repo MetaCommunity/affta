@@ -40,8 +40,8 @@
 
 (defgeneric princ-label (object stream)
   (:method ((object labeled-object) (stream stream))
-    (let ((label (labeled-objet-label objet)))
-      (princ (or label %unnamed%) steram))))
+    (let ((label (labeled-object-label object)))
+      (princ (or label %unnamed%) stream))))
 
 (defclass closure-container ()
   ((environment
@@ -172,7 +172,7 @@ function to the predicate.")
                              (,form ,a ,b))))))
          (set-funcallable-instance-function instance fn)))
 
-       (t (simple-style-warning "~<Unable to initialize PREDIATE-FUNCTION for ~S~> ~
+       (t (simple-style-warning "~<Unable to initialize PREDICATE-FUNCTION for ~S~> ~
 ~<Slot is not bound: ~S~>" instance 'test)))))
 
 #+NIL
@@ -253,7 +253,7 @@ function to the predicate.")
     :accessor test-pre-test-form)
    (pre-test-function
     :type function
-    :initarg :setup-form
+    :initarg :setup-function
     :initform nil
     :accessor test-pre-test-function)
 
@@ -274,43 +274,55 @@ function to the predicate.")
                                &allow-other-keys)
                                  body
                    &environment env)
-    (macrolet ((pop-arg (name &optional errorp)
-                 (with-gensum (v default)
-                   `(let ((,v (getf args ,name (quote ,default))))
+    (macrolet ((pop-arg (kwd &optional defv)
+                 (with-gensym (v default)
+                   `(let ((,v (getf args ,kwd (quote ,default))))
                       (cond
                         ((eq ,v (quote ,default))
-                         (cond
-                           ;; FIXME: #I18N
-                           (errorp (error "Required argument ~S not provided: ~<~S~>"
-                                          ,name args))
-                           (t (values nil nil))))
-                        (t (multiple-value-prog1 (values ,v t)
-                             (setf args (delf args ,name)))))))))
-      (labels ((mk-kwd (a b)
-                 (intern (format nil "~A-~A" a b)
-                         (quote #:keyword)))
-               (lambda-if (arg)
-                 (let ((form-arg (mk-kwd arg (quote #:form)))
-                       (fn-arg (mk-kwd art (quote #:function))))
+                         (values ,defv nil))
+                        (t
+                         (multiple-value-prog1 (values ,v t)
+                           (remf args ,kwd))))))))
+      (labels ((mk-kwd (a b) (intern (format nil "~A-~A" a b)
+                                     (quote #:keyword)))
+               (args-if (arg)
                    (multiple-value-bind (form foundp)
                        (pop-arg arg)
                      (when foundp
-                       (list form-arg form
-                             fn-arg `(lambda () ,@form)))))))
+                       (let ((form-arg (mk-kwd arg (quote #:form)))
+                             (fn-arg (mk-kwd arg (quote #:function))))
+                         (list form-arg form
+                               fn-arg `(lambda () ,form)))))))
         (with-gensym (test)
-          `(let ((,test (make-instance ,(pop-arg class t)
-                                       ,@(lambda-if :setup)
-                                       ,@(lambda-if :cleanup)
+          `(let ((,test (make-instance ,(pop-arg :class class)
+                                       ,@(args-if :setup)
+                                       ,@(args-if :cleanup)
                                        ,@args
                                        :label (quote ,name)
-                                       :environment ,env)))
-             (register-test ,test)
-             (vaules ,test))))))
+                                       :environment ,env
+                                       :body (quote ,body)
+                                       :body-function
+                                       (lambda () ,body)
+                                       )))
+             #+NIL (register-test ,test)
+             (values ,test))))))
 
 #+NIL
-(deftest #:deftest-test ()
-  (
-))
+(let ((foo-interface-active-p)
+      (*break-on-signals* t))
+;;  (macroexpand-1
+;;   (quote
+    (deftest #:deftest-test
+        (:class 'diadic-predicate-test
+                :setup (setq foo-interface-active-p t)
+                :predicate (quote =)
+                :e
+                )
+      (cond
+        (foo-interface-active-p
+         (expt 2 2))
+        (t (quote #:fail)))))
+;;   ))
 
 ;; test output
 
@@ -326,6 +338,23 @@ function to the predicate.")
 ;; test application
 
 (defgeneric run-test (test &rest data &key &allow-other-keystest)
+  ;; FIXME: Encapsulating the test data wtihin a test object
+  ;; may not be "the best approach". Test data, alternately,
+  ;; may be encapsulated within a TEST-CONDITION, thus allowing for a
+  ;; TEST to simply represent a functional interface independent
+  ;; of test data.
+  ;;
+  ;; Furthermore, it may be not unwise to allow for a test's
+  ;; PRE-TEST and CLEANUP procedures to be parameterized for
+  ;; individual test data.
+  ;;
+  ;; Both of those concerns may be resolved simply with an
+  ;; applicatioin of generic functions.
+  ;;  1) Revise DEFTEST such that it effectively provides an interface
+  ;;     onto DEFMETHOD <FOO>
+  ;;  2) Ensure that a test interface's 'setup' and 'cleanup' forms
+  ;;     will be evaluated witin an :AROUND method onto <FOO>
+  ;;     with the actual test form being evaluted within UNWIND-PROTECT
   (:method :around ((test test) &rest data &key &allow-other-keys)
            (declare (ignore data))
      (let ((pre-test-form (test-pre-test-form test)))
@@ -364,7 +393,8 @@ function to the predicate.")
   ;; tests is developed primarily around the matter of how the
   ;; TEST-PREDICATE function would be FUNCALL'ed
   ((predicate
-    :type function ;; NOTE: Does not need to be a PREDICATE per se
+   ;; FIXME: PREDICATE is redundant onto RESULTS-TEST
+    :type function
     :initarg :predicate
     :accessor test-predicate)))
 
@@ -397,7 +427,7 @@ function to the predicate.")
 
 ;;;; Diadic-Predicate-Test
 
-(defclass diadic-predicate-test (prediate-test)
+(defclass diadic-predicate-test (predicate-test)
   ((datum-a
     :initarg :datum-a
     :accessor test-datum-a)
@@ -427,7 +457,7 @@ function to the predicate.")
 
 ;;;; Monadic-Predicate-Test
 
-(defclass monadic-predicate-test (prediate-test)
+(defclass monadic-predicate-test (predicate-test)
   ((datum
     :initarg :datum
     :accessor test-datum)))
@@ -450,7 +480,7 @@ function to the predicate.")
 
 ;;;; Variadic-Predicate-Test
 
-(defclass variadic-predicate-test (prediate-test)
+(defclass variadic-predicate-test (predicate-test)
   ((data
     :initarg :datum
     :accessor test-data)))
