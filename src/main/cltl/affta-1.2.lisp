@@ -36,6 +36,10 @@
       (values nil nil))))
 
 (defgeneric do-test-setup (params test)
+  (:method (params (test function))
+    (declare (ignore params test))
+    (values nil))
+
   (:method (params (test test))
     ;; a trivial system-supplied primary method
     ;; dispatching to a seperate function
@@ -50,6 +54,10 @@
         (funcall fn params test)))))
 
 (defgeneric do-test-cleanup (params test)
+  (:method (params (test function))
+    (declare (ignore params test))
+    (values nil))
+
   (:method (params (test test))
     ;; a trivial system-supplied primary method
     ;; dispatching to a seperate function
@@ -83,6 +91,10 @@
                      :parameters params
                      :results results)))
 
+  (:method ((params list) (expect list)
+            (test function))
+    (declare (ignore expect))
+    (apply funtion params))
 
   (:method ((params list) (expect list)
             (test diadic-values-test))
