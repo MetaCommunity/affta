@@ -18,9 +18,7 @@
 
 
 (defmethod format-test-label ((test test) (stream stream))
-  (let ((label (labeled-object-label test)))
-    (princ (or label %unnamed%)
-           stream)))
+  (princ-label test stream))
 
 (defmethod print-object ((test test) stream)
   (print-unreadable-object (test stream :type t :identity t)

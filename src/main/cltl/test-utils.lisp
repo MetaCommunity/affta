@@ -2,7 +2,7 @@
 
 (in-package #:info.metacommunity.cltl.test)
 
-(defgeneric labeled-object-label (object))
+(defgeneric label (object))
 
 (defclass labeled-object ()
   ((label
@@ -10,7 +10,7 @@
     ;; predicate, this slot may resemble an RDF:LABEL property
     :initarg :label
     :initform nil
-    :accessor labeled-object-label)))
+    :accessor label)))
 
 (defvar %unnamed%
   ;; primarily for use in format control strings, etc
@@ -19,7 +19,7 @@
 
 (defgeneric princ-label (object stream)
   (:method ((object labeled-object) (stream stream))
-    (let ((label (labeled-object-label object)))
+    (let ((label (label object)))
       (princ (or label %unnamed%) stream))))
 
 (defclass closure-container ()
