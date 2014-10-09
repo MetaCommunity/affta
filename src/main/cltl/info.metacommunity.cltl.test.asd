@@ -21,19 +21,23 @@
 
   :components 
   ((:file "test-package")
+
    (:file "test-utils"
 	  :depends-on 
           ("test-package"))
+
    (:file "test-reporting"
-          :depends-on ("test-package"))
+          :depends-on 
+          ("test-package"))
 
    (:file "test-classes"
           :depends-on 
-          ("test-package" "test-utils"))
+          ("test-reporting"
+           ))
    (:file "test-protocol"
           :depends-on 
-          ("test-calsases" "test-package" "test-utils")
-          )
+          ("test-classes" 
+           ))
    #+UNUSED
    (:file "predicates"
           :depends-on ("test-package"))
