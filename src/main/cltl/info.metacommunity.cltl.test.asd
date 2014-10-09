@@ -11,13 +11,15 @@
 
 (defsystem #:info.metacommunity.cltl.test
   :description 
-  "Another Framework for Functional Test Appliation *(AFFTA)"
-  :version "1.1"
-  ;; :homepage "https://github.com/MetaCommunity/mci-cltl-test"
-  ;; :license "https://github.com/MetaCommunity/mci-cltl-test/blob/master/LICENSE"
+  "Another Framework for Functional Test Appliation (AFFTA)"
+  :version "1.2"
+  ;; :homepage "https://github.com/MetaCommunity/affta"
+  ;; :license "https://github.com/MetaCommunity/affta/blob/master/LICENSE"
   
   :depends-on (#:closer-mop
-               #:info.metacommunity.cltl.utils)
+               #:info.metacommunity.cltl.utils
+               #:info.metacommunity.cltl.application
+               )
 
   :components 
   ((:file "test-package")
