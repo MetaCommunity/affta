@@ -2,6 +2,8 @@
 
 (in-package #:info.metacommunity.cltl.test)
 
+(defgeneric labeled-object-label (object))
+
 (defclass labeled-object ()
   ((label
     ;; [sidebar] with this slot definition interpreted as a
