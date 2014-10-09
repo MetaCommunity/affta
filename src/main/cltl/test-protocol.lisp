@@ -153,6 +153,7 @@
           (do-test parameters expect test)
         (t (c)
           (setf (test-record-condition record) c)
-          (notify %application% test c))))))
+          (notify (current-application) test c))))))
+
 
 
