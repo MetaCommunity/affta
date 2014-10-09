@@ -33,6 +33,7 @@
    (:file "test-classes"
           :depends-on 
           ("test-reporting"
+           "test-utils"
            ))
    (:file "test-protocol"
           :depends-on 
