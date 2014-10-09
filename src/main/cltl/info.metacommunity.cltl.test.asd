@@ -35,10 +35,18 @@
           ("test-reporting"
            "test-utils"
            ))
+
+   (:file "test-recording"
+          :depends-on 
+          ("test-package"
+           ))
+
    (:file "test-protocol"
           :depends-on 
           ("test-classes" 
+           "test-recording"
            ))
+
    #+UNUSED
    (:file "predicates"
           :depends-on ("test-package"))

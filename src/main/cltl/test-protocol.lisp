@@ -137,4 +137,22 @@
     (format* "OK ~S" c))
   (test-failed (c)
     (format* "NOT OK ~S" c)))
+
+
+(declaim (type class-designator %rest-record-class))
+
+(defvar %test-record-class% 'test-record)
+
       
+(defgeneric do-recorded-test (record test)
+  (:method ((record test-record) test)
+    (let ((parameters (test-record-parameters record))
+          (expect (test-record-expected-values record))
+          (test (test-record-test record)))
+      (handler-case
+          (do-test parameters expect test)
+        (t (c)
+          (setf (test-record-condition record) c)
+          (notify %application% test c))))))
+
+
