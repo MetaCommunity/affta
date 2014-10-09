@@ -83,18 +83,21 @@
                     ;; an UNWIND-PROTECT form
                     (do-test-cleanup params test)))
                  (pred (test-predicate test)))
-             (signal (cond
-                       ((funcall pred results expect)
-                        (find-class 'test-succeeded))
-                       (t (find-class 'test-failed)))
-                     :test test
-                     :parameters params
-                     :results results)))
+             (signal 
+              ;; FIXME [CLtL3?] SIGNAL should accept a CLASS object
+              (cond
+                ;; FIXME: Also store the results of the predicate function
+                ;; in the TEST-RECORD (TO DO) object
+                ((funcall pred results expect) (quote test-succeeded))
+                (t (quote test-failed)))
+              :test test
+              :parameters params
+              :results results)))
 
   (:method ((params list) (expect list)
             (test function))
     (declare (ignore expect))
-    (apply funtion params))
+    (apply test params))
 
   (:method ((params list) (expect list)
             (test diadic-values-test))
@@ -127,4 +130,11 @@
 
 ;; prototype for test eval:
 ;;
-;; (do-test '(2 2) '(4) #'expt)
+#+PROTOTYPE
+(handler-case
+    (do-test '(2 2) '(4) #'expt)
+  (test-succeeded (c)
+    (format* "OK ~S" c))
+  (test-failed (c)
+    (format* "NOT OK ~S" c)))
+      
