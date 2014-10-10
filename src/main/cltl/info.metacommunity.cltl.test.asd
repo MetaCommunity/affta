@@ -12,13 +12,14 @@
 (defsystem #:info.metacommunity.cltl.test
   :description 
   "Another Framework for Functional Test Appliation (AFFTA)"
-  :version "1.2"
-  ;; :homepage "https://github.com/MetaCommunity/affta"
-  ;; :license "https://github.com/MetaCommunity/affta/blob/master/LICENSE"
+  :version 
+  #-AFFTA-1.3 "1.2.1"
+  #+AFFTA-1.3 "1.3"
+  :homepage "https://github.com/MetaCommunity/affta"
+  :license "https://github.com/MetaCommunity/affta/blob/master/LICENSE"
   
-  :depends-on (#:closer-mop
-               #:info.metacommunity.cltl.utils
-               #:info.metacommunity.cltl.application
+  :depends-on (#:info.metacommunity.cltl.utils
+               #+AFFTA-1.3 #:info.metacommunity.cltl.application
                )
 
   :components 

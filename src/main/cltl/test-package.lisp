@@ -4,6 +4,8 @@
 
 (defpackage #:info.metacommunity.cltl.test
     (:nicknames #:test)
+    ;; #+CLOSER-MOP
+    #+NIL 
     (:shadowing-import-from
      #:c2mop
      #:defmethod
@@ -14,7 +16,9 @@
     (:use
      #:info.metacommunity.cltl.application
      #:info.metacommunity.cltl.utils
-     #:c2mop #:cl)
+     ;; #+CLOSER-MOP #:c2mop 
+     #:cl
+     )
 
     (:export ;; FIXME: Update
 
