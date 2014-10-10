@@ -17,10 +17,15 @@
     (format-test-label test stream)
     (format-test-results condition test stream)))
 
+(define-condition test-result (test-condition)
+  ((record
+    :initarg :record
+    :accessor test-result-record)))
 
-(define-condition test-failed (test-condition)
+
+(define-condition test-failed (test-result)
   ()
-  (:report #'format-test-condition))
+  (:report format-test-condition))
 
 
 (defmethod format-test-condition ((condition test-failed)
@@ -29,9 +34,9 @@
   (princ "Test failed" stream))
 
 
-(define-condition test-succeeded (test-condition)
+(define-condition test-succeeded (test-result)
   ()
-  (:report #'format-test-condition))
+  (:report format-test-condition))
 
 
 (defmethod format-test-condition ((condition test-succeeded)
