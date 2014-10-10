@@ -27,12 +27,10 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 ## Development Plan
 
-### AFFTA-1.2
-
-* Develop test recording framework, seperate from test definition framework
-
 
 ### AFFTA-1.3
+
+* Develop test recording framework, seperate from test definition framework
 
 * Focusing on `test-protocol.lisp`, revise the primary test protocol so
   as to accept a single TEST-SPECIFIER argument in each of:
