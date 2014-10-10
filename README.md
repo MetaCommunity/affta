@@ -8,11 +8,29 @@ in a Common Lisp Platform
 
 _(TBD. API is in revision, towards AFFTA 1.3+)_
 
+## Dependencies
+
+AFFTA 1.2 depends on the following systems:
+
+* [info.metacommunity.cltl.utils][mci-cltl-utils]
+
+## Licensing
+
+AFFTA is licensed under the terms of the [Eclipse Public License 1.0][EPL]
+
 ## Availability
 
-_(TO DO: Note availability of AFFTA, here)_
+The primary source tree for AFFTA is hosted at GitHub:
 
-## Roadmap
+[git@github.com:MetaCommunity/affta.git][affta]
+
+
+## Development Plan
+
+### AFFTA-1.2
+
+* Develop test recording framework, seperate from test definition framework
+
 
 ### AFFTA-1.3
 
@@ -59,3 +77,7 @@ focusing on `test-classes.lisp`, implement `ROOTFS-TEST`
 * Integration with the debugger (cf. MCi `APPLICATION` system) for
   batch mode tests that can be held for developer interaction
 
+
+[EPL]: https://www.eclipse.org/legal/epl-v10.html
+[affta]: https://github.com/MetaCommunity/affta
+[mci-cltl-utils]: https://github.com/MetaCommunity/mci-cltl-utils
