@@ -66,11 +66,17 @@ The primary source tree for AFFTA is hosted at GitHub:
         
     * TEST [Class]
         * revise to add slot definitions for test identity
-        
+
+    * LISP-TEST [Class]
+
+    * FUNCTIONAL-TEST [Class]
+
+    * CLASS-PROTOCOL-TEST [Class]
+ 
     * TEST-SUITE [Class]
         * define
         * subclass of ASDF:SYSTEM
-        
+
     * FUNCTIONAL-TEST [Class]
         * rename from VALUES-TEST
         * remove slot definitions effectively shadowed by TEST-GOAL
@@ -78,6 +84,8 @@ The primary source tree for AFFTA is hosted at GitHub:
         * initialize LAMBDA-FUNCTION from LAMBDA-BODY when SHARED-INITIALIZE for LAMBDA-FUNCTION
         
     * TEST-GOAL [Class] - define; refer to [test-protocol][test-protocol]
+
+    * TEST-RECORD [Class] - refer to [test-recording][test-recording]
 
     * DEFSUITE [Macro]  - define; refer to [test-protocol][test-protocol]
     
@@ -103,17 +111,38 @@ The primary source tree for AFFTA is hosted at GitHub:
             * See also: DEFTEST*; IN-TEST-SUITE; CURRENT-TEST-SUITE
     
     * DEFGOALS [Macro]  - define; refer to [test-protocol][test-protocol]
-    
+
     * RUN-TEST [Macro]  - define; refer to [test-protocol][test-protocol]
     
     * RUN-TEST-SUITE [Macro]  - define; refer to [test-protocol][test-protocol]
+
+    * DO-TEST-SETUP [Generic Function]
+        * System-Supplied Primary Methods
+            * DO-TEST-SETUP T FUNCTION
+                * {Describe: "No-Op"}
+            * DO-TEST-SETUP T TEST
+                * {see also: TEST-SETUP-FUNCTION}
     
-    * AFFTA [Manual]
+    * DO-TEST-CLEANUP [Generic Function]
+        * System-Supplied Primary Methods
+            * DO-TEST-CLEANUP T FUNCTION
+                * {Describe: "No-Op"}
+            * DO-TEST-CLEANUP T TEST
+                * {see also: TEST-CLEANUP-FUNCTION}
+        * {See also: test-record-cleanup-results
+
+    * TEST-SETUP-FUNCTION [Generic Function]
+        * Summary: Functional interface for pre-test environment setup forms
+        
+    * TEST-CLEANUP-FUNCTION [Generic Function]
+        * Summary: Functional interface for post-test environment cleanup forms
+        
+    * **AFFTA** [Manual]
         * Begin writing reference manual for AFFTA
         * Format: TBD
         * Sections
             * Overview
-            * Reference
+            * **Reference**
                 * Use Cases
                     * "Source-Inline" Tests
                         * {cf. MKTEST, AFFTA-1.3}
@@ -125,7 +154,7 @@ The primary source tree for AFFTA is hosted at GitHub:
                         * Application: Class protocol regression testing; Integration testing
                         * A "Batch" test may serve to provide a combined testing interface for an individual Common Lisp system
                         * In AFFTA 2 and later revisions branch revisions, a "batch testing" interface may be defined for each of: Testing a Common Lisp appliation [cf. `APPLICATION` system]; testing the contents of a _Root FS_ for (e.g) an _image_ to be installed onto an embedded device (cf. BeagleBone Black, other single-board computing platforms, and other Embedded computing platforms)
-                * Defining Tests - Concepts
+                * **Defining Tests - Concepts**
                     * Test Components
                         * Test Metadata
                             * {Sidebar: Test metadata must be defined such as to be displayed in any medium in which a test may "probably" be evaluated, e.g tet stream of a REPL, if not a full IDE}
@@ -144,6 +173,8 @@ The primary source tree for AFFTA is hosted at GitHub:
                         * Test Dependencies
                             * {See also: Extensions onto ASDF}
                         * Test Definitions
+                            * Functional Tests
+                                * Monadic, Diadic, and Variadic Functional Tests
                             * Test Structure {TO DO: move this to reference section}
                                 * Direct superclasses: test-component
                                 * Test Lambda
@@ -251,3 +282,4 @@ The primary source tree for AFFTA is hosted at GitHub:
 [affta]: https://github.com/MetaCommunity/affta
 [mci-cltl-utils]: https://github.com/MetaCommunity/mci-cltl-utils
 [test-protocol]: src/main/cltl/test-protocol.lisp
+[test-protocol]: src/main/cltl/test-recording.lisp
