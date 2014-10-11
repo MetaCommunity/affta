@@ -220,6 +220,8 @@ The primary source tree for AFFTA is hosted at GitHub:
   implementing the `UNION-STREAM` specification (presently denoted in
   test-protocol.lisp)
 
+* Provide CLIM integration for `FORMAT-TEST-LABEL`
+
 ### AFTFA-1.5
 
 * Focusing on the MCi `APPLICATION` system, develop support for using
