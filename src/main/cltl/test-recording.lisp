@@ -3,11 +3,11 @@
 
 (in-package #:info.metacommunity.cltl.test)
 
-(defgeneric test-record-test (test))
+(defgeneric test-goal-test (test))
 
-(defgeneric test-record-parameters (test))
+(defgeneric test-goal-parameters (test))
 
-(defgeneric test-record-expect-state (test))
+(defgeneric test-goal-expect-state (test))
 ;; ^ FIXME: This applies only to a VALUES-TEST
 
 (declaim (type function %default-equivalence-function%))
@@ -29,25 +29,41 @@
 
 ;; FIXME: Implement TEST-GOAL
 
+(defclass test-goal-mixin ()
+  ((test
+    :initarg :test
+    :accessor test-goal-test)))
+
+(defclass test-goal (test-mixin)
+  ())
+
+(defclass lisp-test-goal (test-goal)
+  ((parameters
+    :initarg :parameters
+    :accessor test-goal-parameters)
+   (expect-state
+    :initarg :expect
+    :accessor test-goal-expect-state))
+
+#+TO-DO
+(defclass application-test-goal (test-goal)
+  ...)
+
+#+TO-DO
+(defclass rootfs-test-goal (test-goal)
+  ...)
 
 
-(defclass test-record ()
+(defclass test-record (test-mixin)
   ;; In the design of AFFTA 1.2, the TEST-RECORD class serves as both
   ;; a means for specifying parameters to a test and recording the
   ;; results of a test for later evaluation. Though it's semantically
   ;; a bit of a mashup, but in a sense it may serve towards a sense of
   ;; convenience as to keep the parameters and expected values close
   ;; together with the test result values.
-  ((test ;; GOAL, RECORD
-    :initarg :test
-    :accessor test-record-test)
-   (parameters ;; GOAL
-    :initarg :parameters
-    :accessor test-record-parameters)
-   (expect-state ;; GOAL
-    :initarg :expect
-    :accessor test-record-expect-state)
-   (condition ;; RESULT
+  (
+
+   (condition 
     ;; If the test completed successfully, this slot's value should be
     ;; a TEST-RECORD-CONDITION. If the test did not complete
     ;; successfully, this slot's value should contain a CONDITION
@@ -57,7 +73,7 @@
     ;; evaluation of the TEST for the specified PARAMETERS.
     :initarg :condition
     :accessor test-record-condition)
-   (results ;; RESULT
+   (results
     ;; For a values test:
     ;;
     ;; This slot's value should hold a multiple-value list of the
@@ -69,7 +85,7 @@
     ;;  DO-TEST-CLEANUP. See notes, below)
     :initarg :results
     :accessor test-record-results)
-   (setup-results ;; RESULT
+   (setup-results
     ;; This slot's value should hold a multiple-value-list of any
     ;; values returned by the effective DO-TEST-SETUP method for this
     ;; TEST-RECORD  - recorded in the TEST-RECORD primarily for
@@ -77,7 +93,7 @@
     :initarg :setup-results
     :initform nil
     :accessor test-record-setup-results)
-   (cleanup-results ;; RESULT
+   (cleanup-result
     ;; This slot's value should hold a multiple-value-list of any
     ;; values returned by the effective DO-TEST-CLEANUP method for
     ;; this TEST-RECORD - recorded in the TEST-RECORD primarily for
