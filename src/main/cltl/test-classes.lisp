@@ -67,21 +67,20 @@
 
 
 (defclass functional-test (lisp-test)
+  ;; in which the TEST-OBJECT is assumed to designate a function
+  ())
+
+
+(defclass functional-setf-test (functional-test)
+  ;; in which the TEST-OBJECT is assumed to designate a setf form
+  ;; FIXME: Develop a use case, e.g. onto CLIM multiple-value-setf
   ())
 
 
 (defclass class-protocol-test (lisp-test)
-  ((class 
-    ;; NOTE: This slot and its accessor may be renamed within AFFTA-1.3
-    ;; subsequent to development of an exacting use case for this
-    ;; class' definition - such as c.f READ-WRITE-LOCK
-    :initarg :class
-    :accessor test-class)))
+  ;; in which the TEST-OBJECT is assumed to designate a class
+  ;; see also: UTILS:COMPUTE-CLASS
+  ;; FIXME: Develop a use case, e.g. towards a portable READ-WRITE-LOCK
+  ())
 
 
-
-(defmethod format-test-label ((test class-protocol-test)
-                              (stream stream))
-  (princ-label test stream)
-  (princ #\Space stream)
-  (princ (test-class test) stream))
