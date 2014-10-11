@@ -55,6 +55,8 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 * Ensure that all "top-level" types and interfaces are available externally from within #:TEST
 
+* Develop _use case_ example for `CLASS-PROTOCOL-TEST`, towards definition of a portable `READ-WRITE-LOCK` for _Bordeaux Threads_
+
 * Integate w/ ASDF
 
 #### Progress

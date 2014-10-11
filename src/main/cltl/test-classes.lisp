@@ -72,6 +72,9 @@
 
 (defclass class-protocol-test (lisp-test)
   ((class 
+    ;; NOTE: This slot and its accessor may be renamed within AFFTA-1.3
+    ;; subsequent to development of an exacting use case for this
+    ;; class' definition - such as c.f READ-WRITE-LOCK
     :initarg :class
     :accessor test-class)))
 
