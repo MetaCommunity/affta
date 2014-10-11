@@ -66,10 +66,8 @@
     :accessor test-lambda-function)))
 
 
-
 (defclass functional-test (lisp-test)
   ())
-
 
 
 (defclass class-protocol-test (lisp-test)
@@ -82,4 +80,5 @@
 (defmethod format-test-label ((test class-protocol-test)
                               (stream stream))
   (princ-label test stream)
+  (princ #\Space stream)
   (princ (test-class test) stream))
