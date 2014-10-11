@@ -10,13 +10,22 @@
 (defgeneric test-record-expect-state (test))
 ;; ^ FIXME: This applies only to a VALUES-TEST
 
+(declaim (type function %default-equivalence-function%))
+(defvar %default-equivalence-function% #'equalp)
+
+(defgeneric test-predicate (test)
+  (:method ((test functional-test))
+    (values %default-equivalence-function%)))
+;; ^ FIXME : Remove (?) or move into test-record.lisp
+
+
 (defgeneric test-record-condition (test))
 
 (defgeneric test-record-results (test))
 
 (defgeneric test-record-setup-results (test))
 
-(defgeneric test-record-setup-cleanup-results (test))
+(defgeneric test-record-cleanup-results (test))
 
 ;; FIXME: Implement TEST-GOAL
 
@@ -29,14 +38,13 @@
   ;; a bit of a mashup, but in a sense it may serve towards a sense of
   ;; convenience as to keep the parameters and expected values close
   ;; together with the test result values.
-  ((test ;; GOAL
+  ((test ;; GOAL, RECORD
     :initarg :test
     :accessor test-record-test)
    (parameters ;; GOAL
     :initarg :parameters
     :accessor test-record-parameters)
    (expect-state ;; GOAL
-    ;; FIXME: Rename to EXPECTED-....? {values / behaviors / side effects... }
     :initarg :expect
     :accessor test-record-expect-state)
    (condition ;; RESULT
@@ -85,6 +93,7 @@
    :intiform (make-instance 'union-stream))
 
   )
+
 
 
 

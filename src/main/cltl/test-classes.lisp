@@ -10,14 +10,24 @@
 
 (defgeneric test-object (test))
 
+(defvar %unbound-slot-label% 
+  ;; FIXME: #I18N
+  ;; FIXME: Stack allocate this binding and its string value
+  (coerce "{Unbound}" 'simple-base-string))
 
 ;;;; Test
 
 (defclass test (labeled-object)
-  ())
+  ((object
+    :initarg :object
+    :accessor test-object)))
+
+(declaim (type string %unbound-slot-label%))
 
 (defmethod format-test-label ((test test) (stream stream))
-  (princ-label test stream))
+  (format stream "[~A] ~A" 
+          (class-of test)
+          (slot-value* test 'object %unbound-slot-label%)))
 
 (defmethod label ((object test))
   (with-output-to-string (s)
@@ -27,106 +37,49 @@
   (print-unreadable-object (test stream :type t :identity t)
     (format-test-label test stream)))
 
-;;;; Values-Test [FIXME: Rename to FUNCTIONAL-TEST]
+;;;; Functional-Test [FIXME: Rename to FUNCTIONAL-TEST]
 
-(declaim (type function %default-equivalence-function%))
-(defvar %default-equivalence-function% #'equalp)
-(defgeneric test-predicate (test)
-  (:method ((test function))
-    (values %default-equivalence-function%)))
-;; ^ FIXME : Remove (?) or move into test-record.lisp
 
 ;; FIXME/TO-DO:
-#+AFFTA-1.3
-(defclass functional-test (test)
-  ((function
-    :initarg :function
-    :accessor test-function)))
-#+AFFTA-1.3
-(defclass class-protocol-test (test)
-  ((class 
-    :initarg :calss
-    :accessor test-protocol-class)))
+
 
 #+AFFTA-2.0
 (defclass application-test (test)
-...)
+  ...)
+
+#+AFFTA-2.0
+(defclass lisp-application-test (application-test lisp-test)
+  ...)
 
 #+AFFTA-3.0
 (defclass rootfs-test (test)
-...)
+  ...)
 
 
-(defclass values-test (test)
+(defclass lisp-test (test)
   ((lambda-body
     :initarg :lambda
-    :accessor test-body)
+    ;; NOTE: A CLtL compiler typically evaluates (LAMBDA ()...)
+    ;; as a functional expression, rather than a list expression
+    :accessor test-lambda-body)
    (lambda-function
-    :accessor test-lambda-function))
-
-   (expect-values
-    ;; FIXME: overlap onto TEST-RECORD [Remove]
-    :initarg :expect
-    :accessor test-expect-values)
-   (predicate
-    ;; FIXME: overlap onto TEST-RECORD [Remove]
-    :initarg :predicate
-    :initform %default-equivalence-function%
-    :accessor test-predicate)))
+    :accessor test-lambda-function)))
 
 
-(defmethod format-test-label :around ((test values-test) (stream stream))
-  (call-next-method*)
-  (format stream " => (~{ ~A~} ) ~A"
-          (test-expect-values test)
-          (test-predicate test)))
 
-
-;;;; Diadic-Values-Test
-
-(defclass diadic-values-test (values-test)
+(defclass functional-test (lisp-test)
   ())
 
-(defmethod format-test-label ((test diadic-values-test)
+
+
+(defclass class-protocol-test (lisp-test)
+  ((class 
+    :initarg :class
+    :accessor test-class)))
+
+
+
+(defmethod format-test-label ((test class-protocol-test)
                               (stream stream))
   (princ-label test stream)
-  (format stream "(~A ~A ~A) => (~{ ~A~} ) ~A"
-          (test-predicate test)
-          ;; FIXME: Update for revised TEST classes, test recording
-          (test-datum-a test)
-          (test-datum-b test)
-          (test-expect-values test)
-          (test-predicate test)))
-
-
-;;;; Monadic-Values-Test
-
-(defclass monadic-values-test (values-test)
-  ())
-
-(defmethod format-test-label ((test monadic-values-test)
-                              (stream stream))
-  (princ-label test stream)
-  (format stream "(~A ~A) => (~{ ~A~} ) ~A"
-          (test-predicate test)
-          ;; FIXME: Update for revised TEST classes, test recording
-          (test-datum test)
-          (test-expect-values test)
-          (test-predicate test)))
-
-
-;;;; Variadic-Values-Test
-
-(defclass variadic-values-test (values-test)
-  ())
-
-(defmethod format-test-label ((test monadic-values-test)
-                              (stream stream))
-  (princ-label test stream)
-  (format stream "(~A~{ ~A~}) => (~{ ~A~} ) ~A"
-          (test-predicate test)
-          ;; FIXME: Update for revised TEST classes, test recording
-          (test-data test)
-          (test-expect-values test)
-          (test-predicate test)))
-
+  (princ (test-class test) stream))
