@@ -88,6 +88,8 @@ The primary source tree for AFFTA is hosted at GitHub:
         
     * TEST-GOAL [Class] - define; refer to [test-protocol][test-protocol]
 
+    * LISP-TEST-COAL [Class] - refer to [test-protocol][test-protocol]
+
     * TEST-RECORD [Class] - refer to [test-recording][test-recording]
 
     * DEFSUITE [Macro]  - define; refer to [test-protocol][test-protocol]
@@ -188,6 +190,7 @@ The primary source tree for AFFTA is hosted at GitHub:
                                     * Test Name
                                     * Test Description
                         * Test Suites
+                            * A test suite represents, effectively, an ordered set of a _test_, and a set of _test goals_
                             * Test Suite Structure  {TO DO: move this to reference section}
                                 * Direct superclasses: test-component asdf:system
                                 * Test Suite Setup
