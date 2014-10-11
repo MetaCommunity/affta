@@ -67,13 +67,14 @@ The primary source tree for AFFTA is hosted at GitHub:
         * subclass of ASDF:COMPONENT
         
     * TEST [Class]
-        * revise to add slot definitions for test identity
 
     * LISP-TEST [Class]
 
     * FUNCTIONAL-TEST [Class]
 
-    * CLASS-PROTOCOL-TEST [Class]
+    * FUNCTIONAL-SETF-TEST [Class] {FIXME: Unimplemented}
+
+    * CLASS-PROTOCOL-TEST [Class] {FIXME: Unimplemented}
  
     * TEST-SUITE [Class]
         * define
