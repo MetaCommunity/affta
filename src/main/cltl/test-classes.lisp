@@ -145,8 +145,6 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'")
   ...)
 
 
-
-
 (defclass lisp-test (test)
   ((lambda-form
     :initarg :lambda

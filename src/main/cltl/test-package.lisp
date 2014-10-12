@@ -20,12 +20,42 @@
      #:cl
      )
 
-    (:export ;; FIXME: Update
+    (:export
 
+     ;; test-reporting.lisp
      #:test-condition
      #:test-condition-test
-
+     #:test-result
+     #:test-result-record
      #:test-failed
+     #:test-succeeded
+
+     #:format-test-label
+     #:format-test-results
+
+     ;; test-classes.lisp
+     #:test-predicate
+     #:test-predicate-function
+     #:test-name
+     #:test-object
+     #:test-setup-function
+     #:test-cleanup-function
+
      #:test
+
+     #:lisp-test
+     #:test-lambda-form
+     #:test-lambda-function
+
+     #:functional-test
+     ;; #:functional-setup-test ;;; not yet implemented
+     ;; #:class-protocol-test ;;; not yet implemented
+
+     ;; test-protocol.lisp
+     #:do-test-setup
+     #:do-test-cleanup
+     #:do-test
+
+     
      ))
 
