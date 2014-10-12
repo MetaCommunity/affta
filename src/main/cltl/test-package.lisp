@@ -14,7 +14,7 @@
      )
 
     (:use
-     #:info.metacommunity.cltl.application
+     #+AFFTA-1.4 #:info.metacommunity.cltl.application
      #:info.metacommunity.cltl.utils
      ;; #+CLOSER-MOP #:c2mop 
      #:cl
