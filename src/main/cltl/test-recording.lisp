@@ -3,11 +3,11 @@
 
 (in-package #:info.metacommunity.cltl.test)
 
-(defgeneric test-goal-test (test))
+(defgeneric test-test (test))
 
-(defgeneric test-goal-parameters (test))
+(defgeneric test-parameters (test))
 
-(defgeneric test-goal-expect-state (test))
+(defgeneric test-expect-state (test))
 ;; ^ FIXME: This applies only to a VALUES-TEST
 
 (declaim (type function %default-equivalence-function%))
@@ -19,20 +19,20 @@
 ;; ^ FIXME : Remove (?) or move into test-record.lisp
 
 
-(defgeneric test-record-condition (test))
+(defgeneric test-condition (test))
 
-(defgeneric test-record-results (test))
+(defgeneric test-main-results (test))
 
-(defgeneric test-record-setup-results (test))
+(defgeneric test-setup-results (test))
 
-(defgeneric test-record-cleanup-results (test))
+(defgeneric test-cleanup-results (test))
 
 ;; FIXME: Implement TEST-GOAL
 
 (defclass test-utility ()
   ((test
     :initarg :test
-    :accessor test-goal-test)))
+    :accessor test-test)))
 
 (defclass test-goal (test-utility)
   ;; effectively, a test goal encapsulates a set of parameters for a
@@ -42,10 +42,29 @@
 (defclass lisp-test-goal (test-goal)
   ((parameters
     :initarg :parameters
-    :accessor test-goal-parameters)
+    :accessor test-parameters)
    (expect-state
     :initarg :expect
-    :accessor test-goal-expect-state))
+    :accessor test-expect-state)
+   (predicate
+    ;; for application with a FUNCTIONAL-TEST, the TEST-PREDICATE of a
+    ;; LISP-TEST-GOAL must be a function accepting of two
+    ;; arguments: a list of "returned results" and a list of "expected
+    ;; results". The test-predicate function should return _true_ if
+    ;; the set of returned results is equivalent to the set of
+    ;; expected results, for within the closure of the test.
+    ;;
+    ;; of course, within a testing session, if a test's _primary
+    ;; method_ results in a non-local exit of control, then the test 
+    ;; results might not be captured for the test, and the test
+    ;; predicate might not be evaluated, but in that instance, the
+    ;; test-condition for the test record of the test should be set to
+    ;; the condition causing the non-local exit.
+    :initarg :predicate
+    :type function
+    :accessor test-predicate)
+   )
+
 
 #+TO-DO
 (defclass application-test-goal (test-goal)
@@ -68,14 +87,14 @@
     :accessor test-goal)
    (condition 
     ;; If the test completed successfully, this slot's value should be
-    ;; a TEST-RECORD-CONDITION. If the test did not complete
+    ;; a TEST-CONDITION. If the test did not complete
     ;; successfully, this slot's value should contain a CONDITION
     ;; object, such that would be representative of an exceptional
     ;; situation (i.e. ERROR, WARNING, or signaled CONDITION)
     ;; such that intercepted -- namely with HANDLER-CASE -- during the
     ;; evaluation of the TEST for the specified PARAMETERS.
     :initarg :condition
-    :accessor test-record-condition)
+    :accessor test-condition)
    (results
     ;; For a values test:
     ;;
@@ -87,7 +106,7 @@
     ;;  revision of the DO-TEST function, as well as DO-TEST-SETUP and
     ;;  DO-TEST-CLEANUP. See notes, below)
     :initarg :results
-    :accessor test-record-results)
+    :accessor test-main-results)
    (setup-results
     ;; This slot's value should hold a multiple-value-list of any
     ;; values returned by the effective DO-TEST-SETUP method for this
@@ -95,7 +114,7 @@
     ;; information to the developer
     :initarg :setup-results
     :initform nil
-    :accessor test-record-setup-results)
+    :accessor test-setup-results)
    (cleanup-result
     ;; This slot's value should hold a multiple-value-list of any
     ;; values returned by the effective DO-TEST-CLEANUP method for
@@ -103,7 +122,7 @@
     ;; information to the developer
     :initarg :cleanup-results
     :initform nil
-    :accessor test-record-cleanup-results)
+    :accessor test-cleanup-results)
    )
 
   #+AFFTA-1.4
