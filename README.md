@@ -30,7 +30,7 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 ### AFFTA-1.3
 
-#### Goals
+#### Goals - AFFTA-1.3
 
 * Develop test recording framework, seperate from test definition framework
 
@@ -59,7 +59,27 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 * Integate w/ ASDF
 
-#### Progress
+#### Progress - AFFTA-1.3
+
+**TO DO:**
+
+* Move UNION-STREAM comments into normative documentation (OpenOffice)
+
+* Continue with revisions onto other AFFTA-1.3 version-context goals
+
+* Sidebars:
+
+    * **Granite MIDE** - Develop ASDF extension for exporting remote AWS image
+        * Referencing EC2 API tools, make direct reference to the Java API as applied in those tools defined for image export
+        * Issue: Managing incomplete downloads with EC2 + {? Alexandria ?}
+
+    * MetaCommunity **APPLICATION** class: Develop onto....
+        * Lisp image's process - in an extension of a class POSIX-PROCESS, cf. OSICAT
+        * McCLIM 'application frames'
+        * Eclipse extensions - again extending into Java, as cf. CL+J+CCL
+        * ETC.
+
+**Progress**
 
 * Develop initial prototype - see comments in [test-protocol.lisp][test-protocol]
     * TEST-COMPONENT [Class]
@@ -86,7 +106,10 @@ The primary source tree for AFFTA is hosted at GitHub:
         * add slot definitions for LAMBA-BODY, LAMBDA-FUNCTION
         * initialize LAMBDA-FUNCTION from LAMBDA-BODY when SHARED-INITIALIZE for LAMBDA-FUNCTION
         
-    * TEST-GOAL [Class] - define; refer to [test-protocol][test-protocol]
+    * TEST-GOAL [Class]
+        * refer to [test-protocol][test-protocol]
+        * Summary: Effectivley, a test goal `B` encapsulates a test `A`, also storing a set of structural qualities for appliation of `A` within a _testing session_. The stuctural qualities stored in a _test goal_, `B` may provide features for the environment in which the _test form_ of `A` is to be evaluted (e.g directly in a Lisp session, or externally in a host operating system process)
+        * See also: `TEST`, `TEST-RECORD`
 
     * LISP-TEST-COAL [Class] - refer to [test-protocol][test-protocol]
 
@@ -190,7 +213,7 @@ The primary source tree for AFFTA is hosted at GitHub:
                                     * Test Name
                                     * Test Description
                         * Test Suites
-                            * A test suite represents, effectively, an ordered set of a _test_, and a set of _test goals_
+                            * A test suite represents, effectively, an ordered set of a _test_, and a set of _test goals_50
                             * Test Suite Structure  {TO DO: move this to reference section}
                                 * Direct superclasses: test-component asdf:system
                                 * Test Suite Setup
@@ -221,6 +244,9 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 
 ### AFFTA-1.4
+
+* In parallel with development of the MCi `APPLICATION` system,
+  develop an application notificiation protocol for test results
 
 * Developing MCi AFFTA in parallel with the MCi `APPLCIATION` system, 
   implementing the `UNION-STREAM` specification (presently denoted in
