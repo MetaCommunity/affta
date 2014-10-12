@@ -2,6 +2,7 @@
 
 (in-package #:info.metacommunity.cltl.test)
 
+;; FIXME: Merge into file test-recording.lisp
 
 (define-condition test-condition ()
   ((test
@@ -18,6 +19,10 @@
     (format-test-results condition test stream)))
 
 (define-condition test-result (test-condition)
+  ;; The TEST-RESULT class was developed both to serve as a
+  ;; condition class for test failure/success and furthermore to serve
+  ;; as an effective "bucket" for test result values, as the latter
+  ;; being encapsulated within a TEST-RECORD object
   ((record
     :initarg :record
     :accessor test-result-record)))
