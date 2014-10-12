@@ -10,9 +10,10 @@ _(TBD. API is in revision, towards AFFTA 1.3+)_
 
 ## Dependencies
 
-AFFTA 1.2 depends on the following systems:
+AFFTA 1.3 depends on the following systems:
 
 * [info.metacommunity.cltl.utils][mci-cltl-utils]
+* [info.metacommunity.cltl.application][dobelle-app]
 
 ## Licensing
 
@@ -317,3 +318,4 @@ The primary source tree for AFFTA is hosted at GitHub:
 [mci-cltl-utils]: https://github.com/MetaCommunity/mci-cltl-utils
 [test-protocol]: src/main/cltl/test-protocol.lisp
 [test-protocol]: src/main/cltl/test-recording.lisp
+[dobelle-app]: https://github.com/MetaCommunity/dobelle-app
