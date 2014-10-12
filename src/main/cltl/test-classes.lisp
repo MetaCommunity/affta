@@ -59,8 +59,10 @@
 (defclass lisp-test (test)
   ((lambda-body
     :initarg :lambda
-    ;; NOTE: A CLtL compiler typically evaluates (LAMBDA ()...)
-    ;; as a functional expression, rather than a list expression
+    ;; NOTE: A CLtL compiler typically evaluates (LAMBDA () ...)
+    ;; as a functional expression, rather than a list expression.
+    ;; If the (LAMBA () ...) form is _quoted_ however, then the form
+    ;; will be interpreted as a _list_
     :accessor test-lambda-body)
    (lambda-function
     :accessor test-lambda-function)))
