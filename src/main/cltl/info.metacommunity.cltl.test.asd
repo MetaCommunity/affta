@@ -12,7 +12,7 @@
 (defsystem #:info.metacommunity.cltl.test
   :description 
   "Another Framework for Functional Test Appliation (AFFTA)"
-  :version "1.3"
+  :version "1.3.1"
   :homepage "https://github.com/MetaCommunity/affta"
   :license "https://github.com/MetaCommunity/affta/blob/master/LICENSE"
   
