@@ -65,6 +65,23 @@
    (lambda-function
     :accessor test-lambda-function)))
 
+(defmethod shared-initialize :after ((instance lisp-test)
+                                     slot-names 
+                                     &rest initargs
+                                     &key &allow-other-keys)
+
+  (when-slot-init (instance lambda-function slot-names)
+                  (setf (test-lambda-function instance)
+                        (compile nil (test-lambda-body instance)))))
+
+
+#+NIL
+(let ((inst 
+       (make-instance 
+        'lisp-test 
+        :lambda '(lambda () (+ 2 2)))))
+  (funcall (test-lambda-function  inst)))
+;; => 4
 
 (defclass functional-test (lisp-test)
   ;; in which the TEST-OBJECT is assumed to designate a function
