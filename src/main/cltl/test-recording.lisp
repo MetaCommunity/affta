@@ -29,13 +29,15 @@
 
 ;; FIXME: Implement TEST-GOAL
 
-(defclass test-goal-mixin ()
+(defclass test-utility ()
   ((test
     :initarg :test
     :accessor test-goal-test)))
 
-(defclass test-goal (test-mixin)
-  ())
+(defclass test-goal (test-utility)
+  ;; effectively, a test goal encapsulates a set of parameters for a
+  ;; test's _primary test function_
+  (())
 
 (defclass lisp-test-goal (test-goal)
   ((parameters
@@ -54,7 +56,7 @@
   ...)
 
 
-(defclass test-record (test-mixin)
+(defclass test-record (test-utility)
   ;; In the design of AFFTA 1.2, the TEST-RECORD class serves as both
   ;; a means for specifying parameters to a test and recording the
   ;; results of a test for later evaluation. Though it's semantically
