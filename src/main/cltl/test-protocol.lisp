@@ -60,6 +60,45 @@
 
 (defgeneric do-test  (goal test)
   (:method ((goal list) (test function))
+    "initialize a TEST-GOAL and a TEST for the FUNCTION and
+GOAL specification, then call DO-TEST with the new TEST-GOAL and
+TEST objects.
+
+Syntax of GOAL list:
+
+    ({ARG}*) ({VALUE*} [PREDICATE]
+
+ARG, VALUE: An object; will not be evaluated
+PREDICATE: A function
+
+The GOAL list will be evaluated as to initialize a new TEST-GOAL
+object. Furthemore, a FUNCTIONAL-TEST object will be initialized as to  
+represent the TEST object for purpose of functional testing.
+
+Within the method disapatched to:
+
+The TEST function will be evaluated with the set of ARG objects
+providing parameters to the lambda list of the TEST function. The
+values returned by the TEST function will be captured within a
+multiple-value list, and the multiple value list then compared to the
+list of VALUE objects. The multiple-value list of values returned by
+the TEST function will be provided as the first argument to the
+PREDICATE function, and the list of VALUE objects, as specified in
+GOAL, will be provided as the second argument to the PREDICATE
+function. 
+
+The PREDICATE function should return a 'true' value if the
+test, as represented of {GOAL, TEST}, is to be denoted as a
+'successful test'. When the PREDICATE function returns a 'false'
+value,  effectively it serves to indicate that the test is a 'failed
+test'.
+
+It is expected that the method dispatched to will return a TEST-RECORD
+object representative of the test's evaluation.
+
+This function is provided primarily as a convenience, as to allow a 
+develope to specify a functional test effectively \"inline\" with a 
+source code form to which the functional test would be applied. "
     ;; Convenience method for simple inline tests
     ;;
     ;; e.g
