@@ -2,7 +2,7 @@
 
 
 (defgeneric test-setup-function (test)
-  ;; trivial test setup protocol
+  ;; funtional test setup protocol
   ;;
   ;; (values (or null function) boolean)
   ;;
@@ -16,10 +16,10 @@
     (cond
       ((slot-boundp test 'setup-function)
        (values (test-setup-function test) t))
-      (values nil nil))))
+      (t (values nil nil)))))
 
 (defgeneric test-cleanup-function (test)
-  ;; trivial test cleanup protocol
+  ;; functional test cleanup protocol
   ;;
   ;; (values (or null function) boolean)
   ;;
@@ -33,120 +33,131 @@
     (cond
       ((slot-boundp test 'cleanup-function)
        (values (test-cleanup-function test) t))
-      (values nil nil))))
+      (t (values nil nil)))))
 
-(defgeneric do-test-setup 
-    #+AFFTA-1.3 (goal test)
-    #-AFFTA-1.3 (params test)
-  ;; FIXME: Specialize this GF to use TEST-RECORD (wrapper for bare PARAMS methods)
-  (:method (params (test function))
-    (declare (ignore params test))
-    (values nil))
+(defgeneric do-test-setup (goal test)
+  (:method (goal (test function))
+    (declare (ignore goal test))
+    (values))
 
-  (:method (params (test test))
-    ;; a trivial system-supplied primary method
-    ;; dispatching to a seperate function
-    ;; only when test has a SETUP-FUNCTION
-
-    ;; FIXME: Alternately, ensure that DEFTEST
-    ;; defines a primary method onto DO-TEST-SETUP
-    ;; when a :SETUP form is provided
+  (:method (goal (test test))
     (multiple-value-bind (fn setup-p)
         (test-setup-function test)
       (when setup-p
-        (funcall fn params test)))))
+        (funcall fn goal test)))))
 
-(defgeneric do-test-cleanup
-    #+AFFTA-1.3 (goal test)
-    #-AFFTA-1.3 (params test)
-  ;; FIXME: Specialize this GF to use TEST-RECORD (wrapper for bare PARAMS methods)
-  (:method (params (test function))
-    (declare (ignore params test))
+(defgeneric do-test-cleanup (goal test)
+  (:method (goal (test function))
+    (declare (ignore goal test))
     (values nil))
 
-  (:method (params (test test))
-    ;; a trivial system-supplied primary method
-    ;; dispatching to a seperate function
-    ;; only when test has a CLEANUP-FUNCTION
-
-    ;; FIXME: Alternately, ensure that DEFTEST
-    ;; defines a primary method onto DO-TEST-CLEANUP
-    ;; when a :cleanup form is provided
+  (:method (goal (test test))
     (multiple-value-bind (fn cleanup-p)
         (test-cleanup-function test)
       (when cleanup-p
-        (funcall fn params test)))))
+        (funcall fn goal test)))))
 
 
-(defgeneric do-test 
-    #+AFFTA-1.3 (goal test)
-    #-AFFTA-1.3 (params expect test)
-  ;; FIXME: Specialize this GF to use TEST-RECORD (wrapper for bare
-  ;; PARAMS methods)  
-  (:method :around (params expect test)
-           (do-test-setup params test) ;; frobbed :BEFORE method
-           (let ((results
-                  (unwind-protect
-                       (multiple-value-list (call-next-method))
-                    ;; Note that method dispatching, by defualt,
-                    ;; does not encapsulate CALL-NEXT-METHOD within
-                    ;; an UNWIND-PROTECT form
-                    (do-test-cleanup params test)))
-                 (pred (test-predicate test)))
-             (signal 
-              ;; FIXME [CLtL3?] SIGNAL should accept a CLASS object
-              (cond
-                ;; FIXME: Also store the results of the predicate function
-                ;; in the TEST-RECORD (TO DO) object
-                ((funcall pred results expect) (quote test-succeeded))
-                (t (quote test-failed)))
-              :test test
-              ;; FIXME: revise this to use a (new) TEST-RESULT
-              ;; condition, storing the PARAMS rather as a TEST-RECORD
-              ;; to the respective TEST-RESULT condition
-              :record 
-              #-AFFTA-1.3 (list params expect results test)
-              #+AFFTA-1.3 (make-test-record params expect results test)
-              
-              )))
-
-  (:method ((params list) (expect list)
-            (test function))
-    (declare (ignore expect))
-    (apply test params))
-
-  (:method ((params list) (expect list)
-            (test diadic-values-test))
-    (declare (ignore expect))
-    (destructuring-bind (a b) params
-      (funcall (test-main-function test)
-               a b)))
-
-  (:method ((params list) (expect list)
-            (test monadic-values-test))
-    (declare (ignore expect))
-    (destructuring-bind (a) params
-      (funcall (test-main-function test)
-               a)))
-
-  (:method ((params list) (expect list)
-            (test variadic-values-test))
-    (declare (ignore expect))
-    (apply (test-main-function test) params))
+(defgeneric do-test  (goal test)
+  (:method ((goal list) (test function))
+    ;; Convenience method for simple inline tests
+    ;;
+    ;; e.g
+    ;;
+    ;;   (do-test '((2 2) (4)) #'expt)
+    ;;
+    ;;   (do-test '((2 2) (4)) #'expt #'=)
+    (destructuring-bind (params expect 
+                                &optional 
+                                (predicate
+                                 %default-equivalence-function%))
+        goal
+      (let ((g (make-instance 'lisp-test-goal
+                              :parameters params
+                              :expect  expect
+                              :predicate predicate))
+            (test (make-instance 'functional-test 
+                                 :object test
+                                 :lambda
+                                 `(lambda ()
+                                    (funcall ,test ,@params)))))
+        (do-test g test)))))
 
 
-  #+TO-DO
-  (:method ((params list) (expect symbol)
-            (test expect-condition-test))
+;; FIXME: re-order the DO-TEST lambda list => (TEST GOAL) ?
 
-    )
+(defmethod  do-test :around ((goal lisp-test-goal) test)
+  ;; FIXME: should (setf (test-utility-test goal) test) in this method?
+  (macrolet ((record-at-phase (phase test goal record)
+               (let ((app (intern (format* "~A-~A"
+                                           (quote #:do-test)
+                                           phase)))
+                     (rec (intern (format* "~A-~A-~A"
+                                           (quote #:test)
+                                           phase
+                                           (quote #:results)))))
+                 (with-gensym (%test %goal %record results)
+                 `(let* ((,%test ,test)
+                         (,%goal ,goal)
+                         (,%record ,record)
+                         (,results))
+                    (unwind-protect
+                         (setq ,results
+                               (with-flagged-eval ,%record
+                                 (multiple-value-list
+                                  (,app ,%goal ,%test))))
+                      (setf (,rec ,%record) ,results))))))
 
-  )
+             (with-flagged-eval (record &body body)
+               (with-gensym (c bounce %record)
+                 `(macrolet
+                      ((process-c (,c ,bounce ,%record)
+                         `(progn 
+                            (setf (test-condition ,,%record) ,,c)
+                            (,,bounce ,,c))))
+                    (handler-case 
+                        (progn ,@body)
+                      (error (,c) (process-c ,c error ,record))
+                      ;; NOTE that this does not continue after the
+                      ;; warning condition is captured, but simply
+                      ;; stores the warning condition and calls WARN
+                      ;; on the condition
+                      (warning (,c) (process-c ,c warn ,record))
+                      ;; FIXME if this may be too "fine grained" an
+                      ;; approach, to capture all CONDITION
+                      ;; occurrences
+                      (condition (,c) (process-c ,c signal ,record)))))))
+
+    (let ((record (ensure-test-record test goal)))
+      (record-at-phase #:setup test goal record)
+      (let ((results
+             (unwind-protect
+                  (with-flagged-eval record
+                    (multiple-value-list (call-next-method)))
+               ;; Note that method dispatching, by defualt,
+               ;; would not encapsulate CALL-NEXT-METHOD within
+               ;; an UNWIND-PROTECT form.
+               ;;
+               ;; Note also that this results in the
+               ;; TEST-CLEANUP-RESULTS property being set into the
+               ;; RECORD object, before the TEST-RESULTS property is set
+               (record-at-phase #:cleanup test goal record)))
+            (pred (test-predicate goal)))
+
+        (setf (test-main-results record) results)
+
+        (signal (cond
+                  ((funcall pred results expect) 
+                   (quote test-succeeded))
+                  (t (quote test-failed)))
+                :record record)
+
+        (values record)))))
 
 
-;; prototype for test eval [AFFTA 1.2]
+;; prototypes for test eval [AFFTA 1.2]
 ;;
-#+PROTOTYPE
+#+PROTOTYPE ;; AFFTA-1.2
 (handler-case
     (do-test '(2 2) '(4) #'expt)
   ;; ^ FIXME: use default NULL-TEST-SUITE with that DO-TEST eval
@@ -155,7 +166,7 @@
   (test-failed (c)
     (format* "NOT OK ~S" c)))
 
-#+PROTOTYPE
+#+PROTOTYPE ;; AFFTA-1.2
 (progn
 
   ;; setup forms
@@ -228,11 +239,8 @@
   )
 
 
-(declaim (type class-designator %rest-record-class))
 
-(defvar %test-record-class% 'test-record)
-
-      
+;; FIXME: remove DO-RECORDED-TEST, move comments into documentation      
 (defgeneric do-recorded-test (record 
                               #-AFFTA-1.4 test
                               #+AFFTA-1.4 output
@@ -373,16 +381,19 @@
           (888*****adfasdfasdfadfdf* (foo output)
             ))
       (call-the-next-method-!)))
-    
-  #-AFFTA-1.4
+
+  ;; FIXME: This method is scheduled to be removed, subsequent to
+  ;; moving the previous documentation string into an actual
+  ;; documentation file, cf. XXE
+  #+NIL 
   (:method ((record test-record) test)
-    (let ((parameters (test-record-parameters record))
-          (expect (test-record-expected-values record))
-          (test (test-record-test record)))
+    (let ((parameters (test-parameters record))
+          (expect (test-expect-state record))
+          (test (test-utility-test record)))
       (handler-case
           (do-test parameters expect test)
         (t (c)
-          (setf (test-record-condition record) c)
+          (setf (test-condition record) c)
           (notify (current-application) test c))))))
 
 
@@ -395,7 +406,7 @@
 #+AFFTA-1.3
 (defmacro mktest (function (&rest args) (&rest expected-values)
                   &key
-                    (predicate #'equalp)
+                    (predicate %default-equivalence-function%)
                     (context (get-current-test-suite)))
   (with-gensym (test record)
     `(when-test-load ;; ...
