@@ -5,10 +5,56 @@
 (defgeneric test-predicate (test))
 
 (defgeneric test-predicate-function (test))
+;; ^ FIXME: Remove?
 
 (defgeneric test-name (test))
 
 (defgeneric test-object (test))
+
+(defgeneric test-setup-function (test)
+  (:documentation "Functional test setup protocol.
+
+Syntax:
+>    TEST-SETUP-FUNCTION TEST => OBJECT, BOUND-P
+* OBJECT: a FUNCTION object or NIL
+* BOUND-P: a BOOLEAN value
+
+TEST-SETUP-FUNCTION provides an interface for a test developer to
+define an anonymous lambda function for purpose of performing specific
+procedures to configure a test's testing environment, prior to a
+test's main form.
+
+The system supplied primary method `TEST-SETUP-FUNCTION (TEST)` first
+checks whether the SETUP-FUNCTION slot is bound on the TEST object. If
+the slot is bound, the method returns the value of that slot as the
+OBJECT and a 'true' value for BOUND-P. If the slot is not bound, the
+method returns 'false' in both of the OBJECT and BOUND-P values.
+
+See also: `DO-TEST-SETUP'; `DO-TEST'"))
+
+
+(defgeneric test-cleanup-function (test)
+  (:documentation "Functional test cleanup protocol
+
+Syntax:
+>    TEST-SETUP-FUNCTION TEST => OBJECT, BOUND-P
+* OBJECT: a FUNCTION object or NIL
+* BOUND-P: a BOOLEAN value
+
+TEST-CLEANUP-FUNCTION provides an interface for a test developer to 
+define an anonymous lambda function for purpose of performing specific
+procedures as to \"reset\" and \"clean up\" objects defined in a
+test's testing environment, following a test's main form.
+
+The system supplied primary method `TEST-CLEANUP-FUNCTION (TEST)` first
+checks whether the CLEANUP-FUNCTION slot is bound on the TEST
+object. If the slot is bound, the method returns the value of that
+slot as the OBJECT and a 'true' value for BOUND-P. If the slot is not
+bound, the method returns 'false' in both of the OBJECT and BOUND-P
+values.
+
+See also: `DO-TEST-CLEANUP'; `DO-TEST'")
+  )
 
 (defvar %unbound-slot-label% 
   ;; FIXME: #I18N
@@ -20,7 +66,50 @@
 (defclass test (labeled-object)
   ((object
     :initarg :object
-    :accessor test-object)))
+    :accessor test-object)
+   ;; NOTE: The following slots are defined with non-conventional
+   ;; accessors, below.
+   (setup-function
+    :initarg :setup-function)
+   (cleanup-function
+    :initarg :cleanup-function)
+   ))
+
+(defgeneric test-setup-function (test)
+  
+  ;;
+  ;; (values (or null function) boolean)
+  ;;
+  ;; if a function, must accept two arguments:
+  ;;  1) list of parameters provided to the test
+  ;;  2) test object
+  ;;
+  ;; function would be called before the test's primary method is
+  ;; evaluated within DO-TEST
+  (:method ((test test))
+    (cond
+      ((slot-boundp test 'setup-function)
+       (values (test-setup-function test) t))
+      (t (values nil nil)))))
+
+(defgeneric test-cleanup-function (test)
+  
+  ;; 
+  ;;
+  ;; (values (or null function) boolean)
+  ;;
+  ;; if a function, must accept two arguments:
+  ;;  1) list of parameters provided to the test
+  ;;  2) test object
+  ;;
+  ;; function would be called within the cleanup forms of an
+  ;; unwind-protect form within DO-TEST
+  (:method ((test test))
+    (cond
+      ((slot-boundp test 'cleanup-function)
+       (values (test-cleanup-function test) t))
+      (t (values nil nil)))))
+
 
 (declaim (type string %unbound-slot-label%))
 
@@ -56,14 +145,17 @@
   ...)
 
 
+
+
 (defclass lisp-test (test)
-  ((lambda-body
+  ((lambda-form
     :initarg :lambda
     ;; NOTE: A CLtL compiler typically evaluates (LAMBDA () ...)
     ;; as a functional expression, rather than a list expression.
     ;; If the (LAMBA () ...) form is _quoted_ however, then the form
-    ;; will be interpreted as a _list_
-    :accessor test-lambda-body)
+    ;; will be interpreted as a _list_ and may be provided for
+    ;; subsequent system diagnostics.
+    :accessor test-lambda-form)
    (lambda-function
     :accessor test-lambda-function)))
 
@@ -74,7 +166,7 @@
 
   (when-slot-init (instance lambda-function slot-names)
                   (setf (test-lambda-function instance)
-                        (compile nil (test-lambda-body instance)))))
+                        (compile nil (test-lambda-form instance)))))
 
 
 #+NIL

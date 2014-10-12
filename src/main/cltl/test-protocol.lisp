@@ -1,40 +1,6 @@
 (in-package #:test)
 
 
-(defgeneric test-setup-function (test)
-  ;; funtional test setup protocol
-  ;;
-  ;; (values (or null function) boolean)
-  ;;
-  ;; if a function, must accept two arguments:
-  ;;  1) list of parameters provided to the test
-  ;;  2) test object
-  ;;
-  ;; function would be called before the test's primary method is
-  ;; evaluated within DO-TEST
-  (:method ((test test))
-    (cond
-      ((slot-boundp test 'setup-function)
-       (values (test-setup-function test) t))
-      (t (values nil nil)))))
-
-(defgeneric test-cleanup-function (test)
-  ;; functional test cleanup protocol
-  ;;
-  ;; (values (or null function) boolean)
-  ;;
-  ;; if a function, must accept two arguments:
-  ;;  1) list of parameters provided to the test
-  ;;  2) test object
-  ;;
-  ;; function would be called within the cleanup forms of an
-  ;; unwind-protect form within DO-TEST
-  (:method ((test test))
-    (cond
-      ((slot-boundp test 'cleanup-function)
-       (values (test-cleanup-function test) t))
-      (t (values nil nil)))))
-
 (defgeneric do-test-setup (goal test)
   (:method (goal (test function))
     (declare (ignore goal test))
