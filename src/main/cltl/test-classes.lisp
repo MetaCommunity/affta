@@ -161,7 +161,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'")
                                      slot-names 
                                      &rest initargs
                                      &key &allow-other-keys)
-
+  (declare (ignore initargs))
   (when-slot-init (instance lambda-function slot-names)
                   (setf (test-lambda-function instance)
                         (compile nil (test-lambda-form instance)))))
