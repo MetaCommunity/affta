@@ -75,21 +75,25 @@ source code form to which the functional test would be applied. "
     ;;
     ;;   (do-test '((2 2) (4)) #'expt)
     ;;
-    ;;   (do-test '((2 2) (4)) #'expt #'=)
+    ;;   (do-test '((2 2) (4) equal) #'expt)
     (destructuring-bind (params expect 
                                 &optional 
                                 (predicate
                                  %default-equivalence-function%))
         goal
-      (let ((g (make-instance 'lisp-test-goal
+      (let* ((g (make-instance 'lisp-test-goal
                               :parameters params
                               :expect  expect
                               :predicate predicate))
-            (test (make-instance 'functional-test 
-                                 :object test
-                                 :lambda
-                                 `(lambda ()
-                                    (funcall ,test ,@params)))))
+             (p-list (mapcar #'(lambda (form)
+                                 (declare (ignore form))
+                                 (gensym "parameter-"))
+                             params))
+             (test (make-instance 'functional-test 
+                                  :object test
+                                  :lambda
+                                  `(lambda (,@p-list)
+                                     (funcall ,test ,@p-list)))))
         (do-test g test)))))
 
 
@@ -151,6 +155,7 @@ source code form to which the functional test would be applied. "
                ;; TEST-CLEANUP-RESULTS property being set into the
                ;; RECORD object, before the TEST-RESULTS property is set
                (record-at-phase #:cleanup test goal record)))
+            (expect (test-expect-state goal))
             (pred (test-predicate goal)))
 
         (setf (test-main-results record) results)
