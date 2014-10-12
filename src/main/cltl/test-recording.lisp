@@ -3,7 +3,7 @@
 
 (in-package #:info.metacommunity.cltl.test)
 
-(defgeneric test-test (test))
+(defgeneric test-utility-test (test))
 
 (defgeneric test-parameters (test))
 
@@ -32,7 +32,7 @@
 (defclass test-utility ()
   ((test
     :initarg :test
-    :accessor test-test)))
+    :accessor test-utility-test)))
 
 (defclass test-goal (test-utility)
   ;; effectively, a test goal encapsulates a set of parameters for a
