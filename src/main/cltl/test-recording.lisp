@@ -37,7 +37,7 @@
 (defclass test-goal (test-utility)
   ;; effectively, a test goal encapsulates a set of parameters for a
   ;; test's _primary test function_
-  (())
+  ())
 
 (defclass lisp-test-goal (test-goal)
   ((parameters
@@ -63,7 +63,7 @@
     :initarg :predicate
     :type function
     :accessor test-predicate)
-   )
+   ))
 
 
 #+TO-DO
