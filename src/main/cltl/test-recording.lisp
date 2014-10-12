@@ -76,6 +76,10 @@
 
 
 (defclass test-record (test-utility)
+  ;; NOTE: TEST-RECORD was defined primarily for application in
+  ;; functional testing. Proceeding to definition of additional
+  ;; testing applications, TEST-RECORD may be revised.
+
   ;; In the design of AFFTA 1.2, the TEST-RECORD class serves as both
   ;; a means for specifying parameters to a test and recording the
   ;; results of a test for later evaluation. Though it's semantically
@@ -132,6 +136,13 @@
 
   )
 
+
+(defgeneric ensure-test-record (goal test)
+  (:method ((goal lisp-test-goal) (test functional-test))
+    ;; NOTE: TEST-RECORD was defined primarily for application in
+    ;; functional testing. Proceeding to definition of additional
+    ;; testing applications, TEST-RECORD may be revised.
+    (make-instance 'test-record :test test)))
 
 
 

@@ -59,6 +59,10 @@
 
 
 (defgeneric do-test  (goal test)
+  (:method ((goal lisp-test-goal) (test functional-test))
+    (apply (test-lambda-function test)
+           (test-parameters goal)))
+
   (:method ((goal list) (test function))
     "initialize a TEST-GOAL and a TEST for the FUNCTION and
 GOAL specification, then call DO-TEST with the new TEST-GOAL and
@@ -75,7 +79,7 @@ The GOAL list will be evaluated as to initialize a new TEST-GOAL
 object. Furthemore, a FUNCTIONAL-TEST object will be initialized as to  
 represent the TEST object for purpose of functional testing.
 
-Within the method disapatched to:
+Within the method DO-TEST (LISP-TEST-GOAL FUNCTIONAL-TEST)
 
 The TEST function will be evaluated with the set of ARG objects
 providing parameters to the lambda list of the TEST function. The
@@ -167,7 +171,7 @@ source code form to which the functional test would be applied. "
                       ;; occurrences
                       (condition (,c) (process-c ,c signal ,record)))))))
 
-    (let ((record (ensure-test-record test goal)))
+    (let ((record (ensure-test-record goal test)))
       (record-at-phase #:setup test goal record)
       (let ((results
              (unwind-protect
