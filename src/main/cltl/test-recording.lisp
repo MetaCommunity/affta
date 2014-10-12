@@ -63,8 +63,9 @@
   ;; a bit of a mashup, but in a sense it may serve towards a sense of
   ;; convenience as to keep the parameters and expected values close
   ;; together with the test result values.
-  (
-
+  ((goal
+    :initarg :goal
+    :accessor test-goal)
    (condition 
     ;; If the test completed successfully, this slot's value should be
     ;; a TEST-RECORD-CONDITION. If the test did not complete
