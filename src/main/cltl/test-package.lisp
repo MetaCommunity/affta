@@ -14,7 +14,7 @@
      )
 
     (:use
-     #+AFFTA-1.4 #:info.metacommunity.cltl.application
+     #:info.metacommunity.cltl.application ;; cf. LABELED-OBJECT, #'NOTIFY
      #:info.metacommunity.cltl.utils
      ;; #+CLOSER-MOP #:c2mop 
      #:cl
