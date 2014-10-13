@@ -71,11 +71,7 @@
   (format stream "~<~A =?=> ~A~> (~A)"
           (test-parameters goal)
           (test-expect-state goal)
-          (let ((pred (test-predicate goal)))
-            (multiple-value-bind (l c-p name)
-                (function-lambda-expression pred)
-              (declare (ignore l c-p))
-              (values name)))))
+          (function-name (test-predicate goal))))
 
 #+TO-DO
 (defclass application-test-goal (test-goal)

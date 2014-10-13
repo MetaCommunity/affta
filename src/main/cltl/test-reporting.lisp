@@ -24,6 +24,8 @@
 
 (defmethod format-condition ((condition test-result) (stream stream))
   (let ((test (test-condition-test condition)))
+    (princ (class-name (class-of condition)) stream)
+    (write-char #\Space stream)
     (format-test-label test stream)
     (write-char #\Space stream)
     (format-test-results condition stream)))

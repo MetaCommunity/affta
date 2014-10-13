@@ -77,8 +77,8 @@ Example:
  (defun geom-sum (a b)
    (sqrt (+ (expt a 2) (expt b 2))))
 
- (do-test '((3 4) (5)) #'geom-sum)
- => #<TEST-RECORD [FUNCTIONAL-TEST] GEOM-SUM (3 4) =?=> (5) (EQUALP) (5.0)>
+ (do-test '((3 4) (5) every=) #'geom-sum)
+ => #<TEST-RECORD TEST-SUCCEEDED [FUNCTIONAL-TEST] GEOM-SUM (3 4) =?=> (5) (EVERY=) (5.0)>
 
 "
     ;; Convenience method for simple inline tests

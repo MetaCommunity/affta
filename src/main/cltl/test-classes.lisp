@@ -179,15 +179,13 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'")
   ;; in which the TEST-OBJECT is assumed to designate a function
   ())
 
-(defmethod format-test-label ((test test) (stream stream))
+(defmethod format-test-label ((test functional-test) (stream stream))
   (multiple-value-bind (fn boundp)
       (slot-value* test 'object)
-    (format stream "[~A] " (class-name (class-of test)))
-    (cond 
-      (boundp
-       (multiple-value-bind (l closure-p name)
-           (function-lambda-expression fn)
-         (princ name stream))))))
+    (when boundp
+      (format stream "[~A] ~A" 
+              (class-name (class-of test))
+              (function-name (test-object test))))))
 
 
 
