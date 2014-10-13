@@ -27,6 +27,8 @@
 
 (defgeneric test-cleanup-values (test))
 
+(defgeneric 
+
 ;; FIXME: Implement TEST-GOAL
 
 (defclass test-utility ()
@@ -38,6 +40,9 @@
   ;; effectively, a test goal encapsulates a set of parameters for a
   ;; test's _primary test function_
   ())
+
+(defgeneric format-goal-shorthand (goal stream))
+
 
 (defclass lisp-test-goal (test-goal)
   ((parameters
@@ -65,6 +70,11 @@
     :accessor test-predicate)
    ))
 
+(defmethod format-goal-shorthand ((goal lisp-test-goal) (stream stream))
+  (format stream "~A =?=> ~A (~A)"
+          (test stream-parameters g)
+          (test-expect-state g)
+          (test-predicate g)))
 
 #+TO-DO
 (defclass application-test-goal (test-goal)
@@ -109,7 +119,7 @@
     ;;  is regrettably vague in its definition - proceeding to a
     ;;  revision of the DO-TEST function, as well as DO-TEST-SETUP and
     ;;  DO-TEST-CLEANUP. See notes, below)
-    :initarg :result
+    :initarg :main-values
     :accessor test-main-values)
    (setup-values
     ;; This slot's value should hold a multiple-value-list of any
