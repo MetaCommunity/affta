@@ -1,3 +1,5 @@
+;; test-protocol.lisp - AFFTA
+
 (in-package #:test)
 
 
@@ -68,7 +70,16 @@ object representative of the test's evaluation.
 
 This function is provided primarily as a convenience, as to allow a 
 develope to specify a functional test effectively \"inline\" with a 
-source code form to which the functional test would be applied. "
+source code form to which the functional test would be applied. 
+
+Example:
+
+ (defun geom-sum (a b)
+   (sqrt (+ (expt a 2) (expt b 2))))
+
+ (do-test '((3 4) (5)) #'geom-sum)
+
+"
     ;; Convenience method for simple inline tests
     ;;
     ;; e.g
@@ -97,10 +108,9 @@ source code form to which the functional test would be applied. "
         (do-test g test)))))
 
 
-;; FIXME: re-order the DO-TEST lambda list => (TEST GOAL) ?
-
 (defmethod  do-test :around ((goal lisp-test-goal) test)
-  ;; FIXME: should (setf (test-utility-test goal) test) in this method?
+  ;; FIXME: should (setf (test-utility-test goal) test) in this
+  ;; method? - cf DEFCLASS TEST-SUITE [to do], test registry [concept]
   (macrolet ((record-at-phase (phase test goal record)
                (let ((app (intern (format* "~A-~A"
                                            (quote #:do-test)
@@ -108,7 +118,7 @@ source code form to which the functional test would be applied. "
                      (rec (intern (format* "~A-~A-~A"
                                            (quote #:test)
                                            phase
-                                           (quote #:results)))))
+                                           (quote #:values)))))
                  (with-gensym (%test %goal %record results)
                  `(let* ((,%test ,test)
                          (,%goal ,goal)
@@ -152,21 +162,26 @@ source code form to which the functional test would be applied. "
                ;; an UNWIND-PROTECT form.
                ;;
                ;; Note also that this results in the
-               ;; TEST-CLEANUP-RESULTS property being set into the
+               ;; TEST-CLEANUP-VALUES property being set into the
                ;; RECORD object, before the TEST-RESULTS property is set
                (record-at-phase #:cleanup test goal record)))
             (expect (test-expect-state goal))
             (pred (test-predicate goal)))
 
-        (setf (test-main-results record) results)
+        (setf (test-main-values record) results)
+        
+        (let ((state (make-instance 
+                      (cond
+                        ((funcall pred results expect) 
+                         (quote test-succeeded))
+                        (t (quote test-failed)))
+                      :test test
+                      :record record)))
+          (setf (test-condition record) state)
+        
+          (signal state)
 
-        (signal (cond
-                  ((funcall pred results expect) 
-                   (quote test-succeeded))
-                  (t (quote test-failed)))
-                :record record)
-
-        (values record)))))
+          (values record))))))
 
 
 ;; prototypes for test eval [AFFTA 1.2]

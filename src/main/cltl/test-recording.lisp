@@ -21,11 +21,11 @@
 
 (defgeneric test-condition (test))
 
-(defgeneric test-main-results (test))
+(defgeneric test-main-values (test))
 
-(defgeneric test-setup-results (test))
+(defgeneric test-setup-values (test))
 
-(defgeneric test-cleanup-results (test))
+(defgeneric test-cleanup-values (test))
 
 ;; FIXME: Implement TEST-GOAL
 
@@ -49,14 +49,14 @@
    (predicate
     ;; for application with a FUNCTIONAL-TEST, the TEST-PREDICATE of a
     ;; LISP-TEST-GOAL must be a function accepting of two
-    ;; arguments: a list of "returned results" and a list of "expected
-    ;; results". The test-predicate function should return _true_ if
-    ;; the set of returned results is equivalent to the set of
-    ;; expected results, for within the closure of the test.
+    ;; arguments: a list of "returned result" and a list of "expected
+    ;; result". The test-predicate function should return _true_ if
+    ;; the set of returned result is equivalent to the set of
+    ;; expected result, for within the closure of the test.
     ;;
     ;; of course, within a testing session, if a test's _primary
-    ;; method_ results in a non-local exit of control, then the test 
-    ;; results might not be captured for the test, and the test
+    ;; method_ result in a non-local exit of control, then the test 
+    ;; result might not be captured for the test, and the test
     ;; predicate might not be evaluated, but in that instance, the
     ;; test-condition for the test record of the test should be set to
     ;; the condition causing the non-local exit.
@@ -82,7 +82,7 @@
 
   ;; In the design of AFFTA 1.2, the TEST-RECORD class serves as both
   ;; a means for specifying parameters to a test and recording the
-  ;; results of a test for later evaluation. Though it's semantically
+  ;; result of a test for later evaluation. Though it's semantically
   ;; a bit of a mashup, but in a sense it may serve towards a sense of
   ;; convenience as to keep the parameters and expected values close
   ;; together with the test result values.
@@ -99,7 +99,7 @@
     ;; evaluation of the TEST for the specified PARAMETERS.
     :initarg :condition
     :accessor test-condition)
-   (results
+   (main-values
     ;; For a values test:
     ;;
     ;; This slot's value should hold a multiple-value list of the
@@ -109,24 +109,24 @@
     ;;  is regrettably vague in its definition - proceeding to a
     ;;  revision of the DO-TEST function, as well as DO-TEST-SETUP and
     ;;  DO-TEST-CLEANUP. See notes, below)
-    :initarg :results
-    :accessor test-main-results)
-   (setup-results
+    :initarg :result
+    :accessor test-main-values)
+   (setup-values
     ;; This slot's value should hold a multiple-value-list of any
     ;; values returned by the effective DO-TEST-SETUP method for this
     ;; TEST-RECORD  - recorded in the TEST-RECORD primarily for
     ;; information to the developer
-    :initarg :setup-results
+    :initarg :setup-values
     :initform nil
-    :accessor test-setup-results)
-   (cleanup-result
+    :accessor test-setup-values)
+   (cleanup-values
     ;; This slot's value should hold a multiple-value-list of any
     ;; values returned by the effective DO-TEST-CLEANUP method for
     ;; this TEST-RECORD - recorded in the TEST-RECORD primarily for
     ;; information to the developer
-    :initarg :cleanup-results
+    :initarg :cleanup-values
     :initform nil
-    :accessor test-cleanup-results)
+    :accessor test-cleanup-values)
    )
 
   #+AFFTA-1.4
@@ -136,6 +136,13 @@
 
   )
 
+
+(defmethod print-object ((object test-record) stream)
+  (print-unreadable-object (object stream :type t)
+    (cond
+      ((slot-boundp object 'condition)
+       (format-condition (test-condition object) stream))
+      (t (princ nil stream)))))
 
 (defgeneric ensure-test-record (goal test)
   (:method ((goal lisp-test-goal) (test functional-test))

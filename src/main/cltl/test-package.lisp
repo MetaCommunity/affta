@@ -56,6 +56,22 @@
      #:do-test-cleanup
      #:do-test
 
-     
+
+     ;; test-recording.lisp
+     #:test-utility-test
+     #:test-parameters
+     #:test-expect-state
+     #:test-predicate
+     #:test-condition
+     #:test-main-values
+     #:test-setup-values
+     #:test-cleanup-values
+
+     #:test-utility
+     #:test-goal
+     #:lisp-test-goal
+     #:test-record
+     #:ensure-test-record
+
      ))
 

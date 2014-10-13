@@ -30,8 +30,8 @@
 (defmethod format-test-results ((condition test-result) (stream stream))
   (let ((record (test-result-record condition)))
     (cond 
-      ((slot-boundp record 'results)
-       (princ (test-main-results record) stream))
+      ((slot-boundp record 'main-values)
+       (princ (test-main-values record) stream))
       (t (princ %unbound-slot-label% stream)))))
 
 
