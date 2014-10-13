@@ -27,7 +27,7 @@
 
 (defgeneric test-cleanup-values (test))
 
-(defgeneric 
+(defgeneric format-goal-shorthand (goal stream))
 
 ;; FIXME: Implement TEST-GOAL
 
@@ -40,9 +40,6 @@
   ;; effectively, a test goal encapsulates a set of parameters for a
   ;; test's _primary test function_
   ())
-
-(defgeneric format-goal-shorthand (goal stream))
-
 
 (defclass lisp-test-goal (test-goal)
   ((parameters
@@ -71,10 +68,14 @@
    ))
 
 (defmethod format-goal-shorthand ((goal lisp-test-goal) (stream stream))
-  (format stream "~A =?=> ~A (~A)"
-          (test stream-parameters g)
-          (test-expect-state g)
-          (test-predicate g)))
+  (format stream "~<~A =?=> ~A~> (~A)"
+          (test-parameters goal)
+          (test-expect-state goal)
+          (let ((pred (test-predicate goal)))
+            (multiple-value-bind (l c-p name)
+                (function-lambda-expression pred)
+              (declare (ignore l c-p))
+              (values name)))))
 
 #+TO-DO
 (defclass application-test-goal (test-goal)
@@ -159,7 +160,7 @@
     ;; NOTE: TEST-RECORD was defined primarily for application in
     ;; functional testing. Proceeding to definition of additional
     ;; testing applications, TEST-RECORD may be revised.
-    (make-instance 'test-record :test test)))
+    (make-instance 'test-record :test test :goal goal)))
 
 
 

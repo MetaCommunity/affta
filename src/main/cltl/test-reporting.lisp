@@ -30,10 +30,11 @@
 
 (defmethod format-test-results ((condition test-result) (stream stream))
   (let ((record (test-result-record condition)))
-    (cond 
-      ((slot-boundp record 'main-values)
-       (princ (test-main-values record) stream))
-      (t (princ %unbound-slot-label% stream)))))
+    (format-goal-shorthand (test-goal record)
+                           stream)
+    (write-char #\Space stream)
+    (format stream "~A"
+            (test-main-values record))))
 
 
 (define-condition test-failed (test-result)

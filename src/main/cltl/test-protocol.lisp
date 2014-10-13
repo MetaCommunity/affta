@@ -78,6 +78,7 @@ Example:
    (sqrt (+ (expt a 2) (expt b 2))))
 
  (do-test '((3 4) (5)) #'geom-sum)
+ => #<TEST-RECORD [FUNCTIONAL-TEST] GEOM-SUM (3 4) =?=> (5) (EQUALP) (5.0)>
 
 "
     ;; Convenience method for simple inline tests
@@ -109,8 +110,6 @@ Example:
 
 
 (defmethod  do-test :around ((goal lisp-test-goal) test)
-  ;; FIXME: should (setf (test-utility-test goal) test) in this
-  ;; method? - cf DEFCLASS TEST-SUITE [to do], test registry [concept]
   (macrolet ((record-at-phase (phase test goal record)
                (let ((app (intern (format* "~A-~A"
                                            (quote #:do-test)
