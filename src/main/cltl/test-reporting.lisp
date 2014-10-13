@@ -11,12 +11,7 @@
 
 (defgeneric format-test-label (test stream))
 
-(defgeneric format-test-results (condition test stream))
-
-(defmethod format-condition ((condition test-condition) (stream stream))
-  (let ((test (test-condition-test condition)))
-    (format-test-label test stream)
-    (format-test-results condition test stream)))
+(defgeneric format-test-results (condition stream))
 
 (define-condition test-result (test-condition)
   ;; The TEST-RESULT class was developed both to serve as a
@@ -26,6 +21,18 @@
   ((record
     :initarg :record
     :accessor test-result-record)))
+
+(defmethod format-condition ((condition test-result) (stream stream))
+  (let ((test (test-condition-test condition)))
+    (format-test-label test stream)
+    (format-test-results condition stream)))
+
+(defmethod format-test-results ((condition test-result) (stream stream))
+  (let ((record (test-result-record condition)))
+    (cond 
+      ((slot-boundp record 'results)
+       (princ (test-main-results record) stream))
+      (t (princ %unbound-slot-label% stream)))))
 
 
 (define-condition test-failed (test-result)
