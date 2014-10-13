@@ -115,7 +115,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'")
 
 (defmethod format-test-label ((test test) (stream stream))
   (format stream "[~A] ~A" 
-          (class-of test)
+          (class-name (class-of test))
           (slot-value* test 'object %unbound-slot-label%)))
 
 (defmethod label ((object test))
