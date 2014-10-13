@@ -33,8 +33,8 @@
     (format-goal-shorthand (test-goal record)
                            stream)
     (write-char #\Space stream)
-    (format stream "~A"
-            (test-main-values record))))
+    (princ (test-main-values record)
+           stream)))
 
 
 (define-condition test-failed (test-result)
