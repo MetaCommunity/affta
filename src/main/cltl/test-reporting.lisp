@@ -13,7 +13,7 @@
 
 (defgeneric format-test-results (condition test stream))
 
-(defmethod format-condtion ((condition test-condition) (stream stream))
+(defmethod format-condition ((condition test-condition) (stream stream))
   (let ((test (test-condition-test condition)))
     (format-test-label test stream)
     (format-test-results condition test stream)))
