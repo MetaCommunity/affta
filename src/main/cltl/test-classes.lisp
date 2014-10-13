@@ -30,7 +30,17 @@ the slot is bound, the method returns the value of that slot as the
 OBJECT and a 'true' value for BOUND-P. If the slot is not bound, the
 method returns 'false' in both of the OBJECT and BOUND-P values.
 
-See also: `DO-TEST-SETUP'; `DO-TEST'"))
+For a function OBJECT, the function must accept two arguments:
+* a TEST-GOAL
+* a TEST object. 
+
+Within the method `DO-TEST :AROUND (LISP-TEST-GOAL T)`, the function
+will be evaluated with the TEST-GOAL and the TEST provided ot the
+method. The values returned by the function will then be stored as the
+TEST-SETUP-VALUES for the TEST-RECORD returned by the containing
+method.
+
+See also: `DO-TEST-SETUP'; `DO-TEST'; `TEST-CLEANUP-FUNCTION'"))
 
 
 (defgeneric test-cleanup-function (test)
@@ -53,7 +63,17 @@ slot as the OBJECT and a 'true' value for BOUND-P. If the slot is not
 bound, the method returns 'false' in both of the OBJECT and BOUND-P
 values.
 
-See also: `DO-TEST-CLEANUP'; `DO-TEST'")
+For a function OBJECT, the function must accept two arguments:
+* a TEST-GOAL
+* a TEST object. 
+
+Within the method `DO-TEST :AROUND (LISP-TEST-GOAL T)`, the function
+will be evaluated with the TEST-GOAL and the TEST provided ot the
+method. The values returned by the function will then be stored as the
+TEST-CLEANUP-VALUES for the TEST-RECORD returned by the containing
+method.
+
+See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   )
 
 (defvar %unbound-slot-label% 

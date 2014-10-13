@@ -79,15 +79,7 @@ Example:
 
  (do-test '((3 4) (5) every=) #'geom-sum)
  => #<TEST-RECORD TEST-SUCCEEDED [FUNCTIONAL-TEST] GEOM-SUM (3 4) =?=> (5) (EVERY=) (5.0)>
-
 "
-    ;; Convenience method for simple inline tests
-    ;;
-    ;; e.g
-    ;;
-    ;;   (do-test '((2 2) (4)) #'expt)
-    ;;
-    ;;   (do-test '((2 2) (4) equal) #'expt)
     (destructuring-bind (params expect 
                                 &optional 
                                 (predicate
@@ -140,14 +132,7 @@ Example:
                     (handler-case 
                         (progn ,@body)
                       (error (,c) (process-c ,c error ,record))
-                      ;; NOTE that this does not continue after the
-                      ;; warning condition is captured, but simply
-                      ;; stores the warning condition and calls WARN
-                      ;; on the condition
                       (warning (,c) (process-c ,c warn ,record))
-                      ;; FIXME if this may be too "fine grained" an
-                      ;; approach, to capture all CONDITION
-                      ;; occurrences
                       (condition (,c) (process-c ,c signal ,record)))))))
 
     (let ((record (ensure-test-record goal test)))
@@ -160,9 +145,9 @@ Example:
                ;; would not encapsulate CALL-NEXT-METHOD within
                ;; an UNWIND-PROTECT form.
                ;;
-               ;; Note also that this results in the
-               ;; TEST-CLEANUP-VALUES property being set into the
-               ;; RECORD object, before the TEST-RESULTS property is set
+               ;; Note also that the TEST-CLEANUP-VALUES property will
+               ;; be set onto the RECORD object, before the
+               ;; TEST-RESULTS property is set 
                (record-at-phase #:cleanup test goal record)))
             (expect (test-expect-state goal))
             (pred (test-predicate goal)))
@@ -177,24 +162,12 @@ Example:
                       :test test
                       :record record)))
           (setf (test-condition record) state)
-        
           (signal state)
-
           (values record))))))
 
 
-;; prototypes for test eval [AFFTA 1.2]
-;;
-#+PROTOTYPE ;; AFFTA-1.2
-(handler-case
-    (do-test '(2 2) '(4) #'expt)
-  ;; ^ FIXME: use default NULL-TEST-SUITE with that DO-TEST eval
-  (test-succeeded (c)
-    (format* "OK ~S" c))
-  (test-failed (c)
-    (format* "NOT OK ~S" c)))
 
-#+PROTOTYPE ;; AFFTA-1.2
+#+PROTOTYPE ;; from AFFTA-1.2 [Batch Testing]
 (progn
 
   ;; setup forms

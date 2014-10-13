@@ -33,32 +33,32 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 #### Goals - AFFTA-1.3
 
-* Develop test recording framework, seperate from test definition framework
+* [COMPLETED] Develop test recording framework, seperate from test definition framework
 
-* Focusing on `test-protocol.lisp`, revise the primary test protocol so
-  as to accept a single TEST-SPECIFIER argument in each of:
+* Develop a 'TEST-SUITE' class; Integate w/ ASDF
+
+* [COMPLETED] Focusing on `test-classes.lisp`, implement `FUNCTIONAL-TEST`
+
+* Focusing on the `info.metacommunity.cltl.utils` system,
+  develop `CLASS-PROTOCOL-TEST`
+
+* Develop _use case_ example for `CLASS-PROTOCOL-TEST`, towards definition of a portable `READ-WRITE-LOCK` for _Bordeaux Threads_
+
+* [COMPLETED] Focusing on `test-protocol.lisp`, revise the primary test protocol so as to accept a single TEST-SPECIFIER argument in each of:
 
 >    `DO-TEST`
 >    `DO-TEST-SETUP`
 >    `DO-TEST-CLEANUP`
 
 
-* Focusing on `test-classes.lisp`, implement `FUNCTIONAL-TEST`
+* [COMPLETED] Focusing on `test-recording.lisp`, differentiate TEST-GOAL properties from TEST-RECORD properties
 
-* Focusing on the `info.metacommunity.cltl.utils` system,
-  develop `CLASS-PROTOCOL-TEST`
-
-* Focusing on `test-recording.lisp`, differentiate TEST-GOAL properties from TEST-RECORD properties
-
-* Revise DO-TEST, DO-TEST-SETUP, DO-TEST-CLEANUP for test paramterization, cf. TEST-GOAL
+* [COMPLETED] Revise DO-TEST, DO-TEST-SETUP, DO-TEST-CLEANUP for test paramterization, cf. TEST-GOAL
 
 * Remove DO-RECORDED-TEST, ensuring that stand-alone comments within the definition body [source code] are moved into seperate documentation files
 
-* Ensure that all "top-level" types and interfaces are available externally from within #:TEST
+* [COMPLETED] Ensure that all "top-level" types and interfaces are available externally from within #:TEST
 
-* Develop _use case_ example for `CLASS-PROTOCOL-TEST`, towards definition of a portable `READ-WRITE-LOCK` for _Bordeaux Threads_
-
-* Integate w/ ASDF
 
 #### Progress - AFFTA-1.3
 
