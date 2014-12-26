@@ -28,6 +28,30 @@ Git URL (SSH): [git@github.com:MetaCommunity/affta.git][affta]
 
 ## Reference
 
+### Overview
+
+The [AFFTA][affta] test system is defined to address two primary
+_usage cases_ for functional systems testing, in a context of systems
+development:
+* Interactive _instance tests_
+    * May be defined _inline_ with source code being tested
+    * May be useful for quick debug in a rapid development _sprint_
+    * Need not be accompanied with structured test reports
+* Noninteractive _batch tests_
+    * Primary concept: Component-oriented functional testing
+    * May be defined in source files specifically for defining test
+      sessions, seperate to source code being tested
+    * Should be accompanied with structured test reports
+    * Related concepts:
+        * Regression Testing
+        * Integration Testing
+        * Develpoment Metrics
+
+Although [AFFTA][affta] was defined initialy for testing of Common
+Lisp source code, the functional interface for [AFFTA][affta] has been
+defined such that it may be applied for procedures of structured
+systems testing, of components not defined in Common Lisp.
+
 ### Test Protocol Concepts
 
 #### Test Protocol Concepts - Outline
@@ -67,8 +91,9 @@ Git URL (SSH): [git@github.com:MetaCommunity/affta.git][affta]
                   the `test-setup-function` or
                   `test-cleanup-function`, respectively.
 * Test Goals
-    * Test Parameters
-    * Expected Return Value(s)
+    * A _test goal_ represents, effectively, a container for _test
+      parameters_ and _expected return values_ onto a single _test_
+      definition
 * Test Application
     * Test Setup Function (Optional)
     * Test Body
@@ -85,29 +110,58 @@ Git URL (SSH): [git@github.com:MetaCommunity/affta.git][affta]
 * `lisp-test` [Standard Class]
 * `test-lambda-form`, `test-lambda-function` [Accessor]
 * `functional-test` [Standard Class] FIXME: Undefine; use LISP-TEST instead
+* `test-goal` [Standard Class]
+    * Summary: Effectivley, a test goal `B` encapsulates a test `A`,
+      also storing a set of structural qualities for appliation of `A`
+      within a _testing session_. The stuctural qualities stored in a
+      _test goal_, `B` may provide features for the environment in
+      which the _test form_ of `A` is to be evaluted (e.g directly in
+      a Lisp session, or externally in a host operating system
+      process)
+    * See also: `test`, `test-record`
+* `lisp-test-goal` ;; FIXME: Reevaluate how this extends `test-goal`
 * `do-test-setup` [Generic Function]
 * `do-test-cleanup` [Generic Function]
 * `do-test` [Generic Function]
+* TO DO: `deftest` [Macro]
 * TO DO: `with-test` [Macro]
 * TO DO: `run-test` [Function]
     * per _goals specified when run-test is evaluated_
 * TO DO: `defsuite` [Macro]
-* TO DO: `deftest` [Macro]
 * TO DO: `defgoals` [Macro]
 * TO DO: `run-suite` [Function]
     * per _goals defined with defgoals_
+
+### Test Recording Concepts
+
+* ...
+
+### Test Recording Dictionary
+
+* `test-record` [Standard Class]
+* ...
 
 ### Test Reporting Concepts
 
 * Interactive Reports
     * Instance Tests
 * Structured Reports
-    * Interactive Tests
+    * Instance Tests
     * Batch Tests
 
 ### Test Reporting Dictionary
 
 * ...
+
+
+### ASDF System Testing Concepts
+
+* ...
+
+### ASDF System Testing Dictionary
+
+* `test-component` [Standard Class] (To Do)
+
 
 ## Development Plan
 
@@ -157,107 +211,32 @@ Git URL (SSH): [git@github.com:MetaCommunity/affta.git][affta]
 * [COMPLETED] Move UNION-STREAM comments into normative
   documentation - see `README-streams.md`
 
-* Continue with revisions onto other AFFTA-1.3 version-context goals
+* [IN PROGRESS] Continue with revisions onto other AFFTA-1.3 version-context goals
+    * Implement `DEFTEST`, `WITH-TEST`, `RUN-TEST`, `DEFSUITE`,
+      `DEFGOALS`, `RUN-SUITE` (See previous documentation/notes)
+    * Develop prototype for structured test reporting (XML?)
 
-* Sidebars:
+* Sidebar: **Granite MIDE** - Develop ASDF extension for exporting remote AWS image
+    * Developing application onto _EC2 API tools_, make direct reference
+      to the Java API as applied in those tools -- beginning with
+      those tools defined for AWS EB _image_ export 
+    * Issue: Managing incomplete downloads with EC2 + {?
+      Alexandria ?}
+    * Issue: _Granite MIDE_ project is not yet formally defined
+        * McCLIM
+        * cf. Climacs
+            * Appplication of McCLIM Drei, ESA components in an
+              Emacs-like application frame
+        * cf. Eclipse IDE
+        * cf. Virtualbox
+        * cf. Emacs window embedding (?)
 
-    * **Granite MIDE** - Develop ASDF extension for exporting remote AWS image
-        * Referencing EC2 API tools, make direct reference to the Java API as applied in those tools defined for image export
-        * Issue: Managing incomplete downloads with EC2 + {? Alexandria ?}
-
-    * MetaCommunity **APPLICATION** class: Develop onto....
-        * Lisp image's process - in an extension of a class POSIX-PROCESS, cf. OSICAT
-        * McCLIM 'application frames'
-        * Eclipse extensions - again extending into Java, as cf. CL+J+CCL
-        * ETC.
 
 **Progress**
 
 * Develop initial prototype - see comments in [test-protocol.lisp][test-protocol]
-    * TEST-COMPONENT [Class]
-        * define
-        * subclass of ASDF:COMPONENT
         
-    * TEST [Class]
-
-    * LISP-TEST [Class]
-
-    * FUNCTIONAL-TEST [Class]
-
-    * FUNCTIONAL-SETF-TEST [Class] {FIXME: Unimplemented}
-
-    * CLASS-PROTOCOL-TEST [Class] {FIXME: Unimplemented}
- 
-    * TEST-SUITE [Class]
-        * define
-        * subclass of ASDF:SYSTEM
-
-    * FUNCTIONAL-TEST [Class]
-        * rename from VALUES-TEST
-        * remove slot definitions effectively shadowed by TEST-GOAL
-        * add slot definitions for LAMBA-BODY, LAMBDA-FUNCTION
-        * initialize LAMBDA-FUNCTION from LAMBDA-BODY when SHARED-INITIALIZE for LAMBDA-FUNCTION
-        
-    * TEST-GOAL [Class]
-        * refer to [test-protocol][test-protocol]
-        * Summary: Effectivley, a test goal `B` encapsulates a test `A`, also storing a set of structural qualities for appliation of `A` within a _testing session_. The stuctural qualities stored in a _test goal_, `B` may provide features for the environment in which the _test form_ of `A` is to be evaluted (e.g directly in a Lisp session, or externally in a host operating system process)
-        * See also: `TEST`, `TEST-RECORD`
-
-    * LISP-TEST-COAL [Class] - refer to [test-protocol][test-protocol]
-
-    * TEST-RECORD [Class] - refer to [test-recording][test-recording]
-
-    * DEFSUITE [Macro]  - define; refer to [test-protocol][test-protocol]
-    
-    * DEFTEST* [Macro]
-        * define
-        * refer to [test-protocol][test-protocol]
-        * document
-            * Purpose: "Batch mode" interface for test definition
-            * Syntax: DEFTEST* NAME SUITE {PROPERTY-SPECIFIER}* => INST
-                * NAME: A test name, a string or a symbol
-                * SUITE: Name of a test suite, a string or a symbol
-                * PROPERTY-SPECIFIER: Initialization argument for a test class
-                * INST: an object
-           * Description
-               * The macro DEFTEST* provides an interface for defining a test instance. The syntax of DEFTEST* macro allows for specification of test setup, test cleanup, test lambda, and test description forms
-               * See also: DEFTEST
-
-    * DEFTEST [Macro]
-        * define
-        * refer to [test-protocol][test-protocol]
-        * document
-            * Purpose: "Source inline" interface for test definition
-            * See also: DEFTEST*; IN-TEST-SUITE; CURRENT-TEST-SUITE
-    
-    * DEFGOALS [Macro]  - define; refer to [test-protocol][test-protocol]
-
-    * RUN-TEST [Macro]  - define; refer to [test-protocol][test-protocol]
-    
-    * RUN-TEST-SUITE [Macro]  - define; refer to [test-protocol][test-protocol]
-
-    * DO-TEST-SETUP [Generic Function]
-        * System-Supplied Primary Methods
-            * DO-TEST-SETUP T FUNCTION
-                * {Describe: "No-Op"}
-            * DO-TEST-SETUP T TEST
-                * {see also: TEST-SETUP-FUNCTION}
-    
-    * DO-TEST-CLEANUP [Generic Function]
-        * System-Supplied Primary Methods
-            * DO-TEST-CLEANUP T FUNCTION
-                * {Describe: "No-Op"}
-            * DO-TEST-CLEANUP T TEST
-                * {see also: TEST-CLEANUP-FUNCTION}
-        * {See also: test-record-cleanup-results
-
-    * TEST-SETUP-FUNCTION [Generic Function]
-        * Summary: Functional interface for pre-test environment setup forms
-        
-    * TEST-CLEANUP-FUNCTION [Generic Function]
-        * Summary: Functional interface for post-test environment cleanup forms
-        
-    * **AFFTA** [Manual]
+    * **AFFTA** [Manual] (AFFTA 1.2)
         * Begin writing reference manual for AFFTA
         * Format: TBD
         * Sections
