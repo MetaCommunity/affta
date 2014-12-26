@@ -40,14 +40,14 @@ development:
 * Noninteractive _batch tests_
     * Primary concept: Component-oriented functional testing
     * May be defined in source files specifically for defining test
-      sessions, seperate to source code being tested
+      sessions, separate to source code being tested
     * Should be accompanied with structured test reports
     * Related concepts:
         * Regression Testing
         * Integration Testing
-        * Develpoment Metrics
+        * Development Metrics
 
-Although [AFFTA][affta] was defined initialy for testing of Common
+Although [AFFTA][affta] was defined initially for testing of Common
 Lisp source code, the functional interface for [AFFTA][affta] has been
 defined such that it may be applied for procedures of structured
 systems testing, of components not defined in Common Lisp.
@@ -74,7 +74,7 @@ systems testing, of components not defined in Common Lisp.
             * By providing a _lambda form_ or _function_ to either of
               the `:setup-function` or `:cleanup-function` 
               initialization arguments, respectively, when
-              initializating a `test` object
+              initialization a `test` object
             * By specifying a _function_ or _lambda form_ via either
               `(setf test-setup-function)` or `(setf
               test-cleanup-function)` respectively 
@@ -97,7 +97,7 @@ systems testing, of components not defined in Common Lisp.
 * Test Application
     * Test Setup Function (Optional)
     * Test Body
-    * Test Cleanup Function (Optioal)
+    * Test Cleanup Function (Optional)
     * Testing for return values
 
 
@@ -105,17 +105,17 @@ systems testing, of components not defined in Common Lisp.
 
 * `test` [Standard Class]
 * `test-predicate`, `test-predicate-function`, `test-name`, `test-object` [Accessor]
-* `test-setup-function`, `(setf test-setup-function)` [Generic Function
+* `test-setup-function`, `(setf test-setup-function)` [Generic Function]
 * `test-cleanup-function`, `(setf test-cleanup-function)` [Generic Function]
 * `lisp-test` [Standard Class]
 * `test-lambda-form`, `test-lambda-function` [Accessor]
 * `functional-test` [Standard Class] FIXME: Undefine; use LISP-TEST instead
 * `test-goal` [Standard Class]
-    * Summary: Effectivley, a test goal `B` encapsulates a test `A`,
-      also storing a set of structural qualities for appliation of `A`
-      within a _testing session_. The stuctural qualities stored in a
+    * Summary: Effectively, a test goal `B` encapsulates a test `A`,
+      also storing a set of structural qualities for application of `A`
+      within a _testing session_. The structural qualities stored in a
       _test goal_, `B` may provide features for the environment in
-      which the _test form_ of `A` is to be evaluted (e.g directly in
+      which the _test form_ of `A` is to be evaluated (e.g directly in
       a Lisp session, or externally in a host operating system
       process)
     * See also: `test`, `test-record`
@@ -160,7 +160,7 @@ systems testing, of components not defined in Common Lisp.
 
 ### ASDF System Testing Dictionary
 
-* `test-component` [Standard Class] (To Do)
+* `test-component` (To Do) [Standard Class] 
 
 
 ## Development Plan
@@ -169,9 +169,9 @@ systems testing, of components not defined in Common Lisp.
 
 #### Goals - AFFTA-1.3
 
-* [COMPLETED] Develop test recording framework, seperate from test definition framework
+* [COMPLETED] Develop test recording framework, separate from test definition framework
 
-* Develop a 'TEST-SUITE' class; Integate w/ ASDF
+* Develop a 'TEST-SUITE' class; Integrate w/ ASDF
 
 * [COMPLETED] Focusing on `test-classes.lisp`, implement `FUNCTIONAL-TEST`
 
@@ -181,7 +181,7 @@ systems testing, of components not defined in Common Lisp.
 * Develop _use case_ example for `CLASS-PROTOCOL-TEST`
     * e.g. towards definition of a portable `READ-WRITE-LOCK` for
       _Bordeaux Threads_
-    * altrenately, referencing
+    * alternately, referencing
       [igneous-math](https://github.com/MetaCommunity/igneous-math)
     * Issue: What would be the distinguishing characteristics of a
       _class-protocol test_, broadly?
@@ -198,7 +198,7 @@ systems testing, of components not defined in Common Lisp.
 * [COMPLETED] Revise DO-TEST, DO-TEST-SETUP, DO-TEST-CLEANUP for test paramterization, cf. TEST-GOAL
 
 * [COMPLETED] Remove DO-RECORDED-TEST [unused], ensuring that stand-alone comments
-  within the definition body [source code] are moved into seperate
+  within the definition body [source code] are moved into separate
   documentation files
 
 * [COMPLETED] Ensure that all "top-level" types and interfaces are available externally from within #:TEST
@@ -209,7 +209,7 @@ systems testing, of components not defined in Common Lisp.
 **TO DO:**
 
 * [COMPLETED] Move UNION-STREAM comments into normative
-  documentation - see `README-streams.md`
+  documentation - see [`README-streams.md`](README-streams.md)
 
 * [IN PROGRESS] Continue with revisions onto other AFFTA-1.3 version-context goals
     * Implement `DEFTEST`, `WITH-TEST`, `RUN-TEST`, `DEFSUITE`,
@@ -225,10 +225,10 @@ systems testing, of components not defined in Common Lisp.
     * Issue: _Granite MIDE_ project is not yet formally defined
         * McCLIM
         * cf. Climacs
-            * Appplication of McCLIM Drei, ESA components in an
+            * Application of McCLIM Drei, ESA components in an
               Emacs-like application frame
         * cf. Eclipse IDE
-        * cf. Virtualbox
+        * cf. VirtualBox
         * cf. Emacs window embedding (?)
 
 
@@ -252,18 +252,18 @@ systems testing, of components not defined in Common Lisp.
                         * Use cases may include: Testing for systems external to a Common Lisp program
                         * Application: Class protocol regression testing; Integration testing
                         * A "Batch" test may serve to provide a combined testing interface for an individual Common Lisp system
-                        * In AFFTA 2 and later revisions branch revisions, a "batch testing" interface may be defined for each of: Testing a Common Lisp appliation [cf. `APPLICATION` system]; testing the contents of a _Root FS_ for (e.g) an _image_ to be installed onto an embedded device (cf. BeagleBone Black, other single-board computing platforms, and other Embedded computing platforms)
+                        * In AFFTA 2 and later revisions branch revisions, a "batch testing" interface may be defined for each of: Testing a Common Lisp application [cf. `APPLICATION` system]; testing the contents of a _Root FS_ for (e.g) an _image_ to be installed onto an embedded device (cf. BeagleBone Black, other single-board computing platforms, and other Embedded computing platforms)
                 * **Defining Tests - Concepts**
                     * Test Components
                         * Overview
                             * In concepts developed within [AFFTA], a _test_, once applied, is comprised of a _test object_, a _test goal_, and a _test record_.
-                                * A _test object_ represents a _form_ defined for purpose of evaluating the behaviors of a software system, for conformance with behaviors expected of the software system, by the system's developers. In adition to the lisp _form_ of a _test object_, a _test object_  may also be represented of additional _test utility_ _resources_ essentially external to the _Lisp environment_.
-                                * A _test goal_ represents a set of parameters to a _test object_, as well as an expected _result condition_, contingent on successful evaluation of the _test object_. (In the instance of a simple, functional Lisp program test, for a _functional test_ `B` designed as to test the behaviors of a function `A`,  the set of _parameters_ to a _functional_ _test goal_ `G` onto `B` is repreented simply of a list of arguments for the function `A`; the _result condition_ for `G`  onto `B` would be represented of a list of _values_ that the function `A` would be expected to return.)
+                                * A _test object_ represents a _form_ defined for purpose of evaluating the behaviors of a software system, for conformance with behaviors expected of the software system, by the system's developers. In addition to the lisp _form_ of a _test object_, a _test object_  may also be represented of additional _test utility_ _resources_ essentially external to the _Lisp environment_.
+                                * A _test goal_ represents a set of parameters to a _test object_, as well as an expected _result condition_, contingent on successful evaluation of the _test object_. (In the instance of a simple, functional Lisp program test, for a _functional test_ `B` designed as to test the behaviors of a function `A`,  the set of _parameters_ to a _functional_ _test goal_ `G` onto `B` is represented simply of a list of arguments for the function `A`; the _result condition_ for `G`  onto `B` would be represented of a list of _values_ that the function `A` would be expected to return.)
                                 * A _test record_ represents an instance of the evaluation of a _test_ with a single _test goal_ object. (In [AFFTA], a _test record_ for a simple, functional Lisp program test will store any condition objects representing a non-local exit of control from within the _test main form_)
-                            * [AFFTA] is designed around a concept of _seperation of concerns_ for definition of _test_ objects, _test goal_ objects, and _test record_ objects.
-                            * TO DO: [AFFTA] must also define a concept of a _test suite_, such that should be well integrated within the Lisp environment's system defintiion facility, _viz a viz_ ASDF - as well as to be accessed from a functional interface, _viz a viz_ `CURRENT-TEST-SUITE`
+                            * [AFFTA] is designed around a concept of _separation of concerns_ for definition of _test_ objects, _test goal_ objects, and _test record_ objects.
+                            * TO DO: [AFFTA] must also define a concept of a _test suite_, such that should be well integrated within the Lisp environment's system definition facility, _viz a viz_ ASDF - as well as to be accessed from a functional interface, _viz a viz_ `CURRENT-TEST-SUITE`
                         * Test Metadata
-                            * {Sidebar: Test metadata must be defined such as to be displayed in any medium in which a test may "probably" be evaluated, e.g tet stream of a REPL, if not a full IDE}
+                            * {Sidebar: Test metadata must be defined such as to be displayed in any medium in which a test may "probably" be evaluated, e.g test stream for a REPL, if not a full IDE}
                             * Object Naming in AFFTA
                                 * Test Names: {Symbols and/or strings}
                                 * Test Labels: {TBD}
@@ -275,7 +275,7 @@ systems testing, of components not defined in Common Lisp.
                             * AFFTA _tests_ and _test suites_ may be defined with dependencies, in a semantics effectively extending of the semantics of dependency structures within ASDF _components_ and _systems_
                             * Use case: Situation of when a test suite M for a system A may effectively require that an ASDF system B would be successfully loaded, when the system A, as being tested in the test suite M, does not otherwise "immediately" depend on the system B
                             * {FIXME: This documentation assumes that the reader would be familiar with the semantics of ASDF system definitions, and as such, should be made to include a reference to a tutorial introducing of ASDF}.
-                            * {Candidly, this is one part a matter of convenience, another part a matter of convenience applied, thirdly a matter of "Re-use" of "Existing code". Note, specficialy, the availability of component dependency structures as defined within ASDF 3}
+                            * {Candidly, this is one part a matter of convenience, another part a matter of convenience applied, thirdly a matter of "Re-use" of "Existing code". Note, superficially, the availability of component dependency structures as defined within ASDF 3}
                         * Test Dependencies
                             * {See also: Extensions onto ASDF}
                         * Test Definitions
@@ -309,7 +309,7 @@ systems testing, of components not defined in Common Lisp.
                             * Test instances: {cf. `unwind-protect`}
                         * Test/Suite Cleanup
                         * Streams
-                            * {cf. AFTA-1.4}
+                            * {cf. AFFTA-1.4}
                    * Test Result Recording
                        * {cf. "Goals" for AFFTA-1.3}
                 * Integration with ASDF
@@ -324,15 +324,15 @@ systems testing, of components not defined in Common Lisp.
 ### AFFTA-1.4
 
 * In parallel with development of the MCi `APPLICATION` system,
-  develop an application notificiation protocol for test results
+  develop an application notification protocol for test results
 
-* Developing MCi AFFTA in parallel with the MCi `APPLCIATION` system, 
+* Developing MCi AFFTA in parallel with the MCi `APPLICATION` system, 
   implement the `UNION-STREAM` specification (presently denoted in
   test-protocol.lisp)
 
 * Provide CLIM integration for `FORMAT-TEST-LABEL`
 
-### AFTFA-1.5
+### AFFTA-1.5
 
 * Focusing on the MCi `APPLICATION` system, develop support for using
   the Amazon Web Services (AWS) API for notifying a developer when a
@@ -348,8 +348,8 @@ systems testing, of components not defined in Common Lisp.
 * Referencing [Dandelion], integrate with the Eclipse IDE
     * Presentation of test metadata
     * Test controls and test reporting
-    * Associtation of TEST and TEST-SUITE objects with COMPONENT and SYSTEM objects
-    * "Interafcing" w/i Eclipse IDE
+    * Association of TEST and TEST-SUITE objects with COMPONENT and SYSTEM objects
+    * "Interfacing" w/i Eclipse IDE
 
 ### AFFTA-2
 
@@ -372,9 +372,9 @@ systems testing, of components not defined in Common Lisp.
 * Linux kernel testing [See also: One's Diigo bookmarks]
 * "Full build process"
     * "Diagnostic distribution" testing - definitions and automation
-        * Optimizations for compilation of "diagnostic" system components
+        * Optimization for compilation of "diagnostic" system components
     * "Live distribution" testing - definitions and automation
-        * Optimizations for compilation of "live" system components
+        * Optimization's for compilation of "live" system components
 * Integration with _Continuous Integration_ systems
     * Hudson (Eclipse Foundation)
 * Integration with application-specific testing frameworks
@@ -396,3 +396,20 @@ systems testing, of components not defined in Common Lisp.
 [test-protocol]: src/main/cltl/test-protocol.lisp
 [test-protocol]: src/main/cltl/test-recording.lisp
 [dobelle-app]: https://github.com/MetaCommunity/dobelle-app
+
+<!--  LocalWords:  AFFTA TBD API mci cltl utils dobelle FIXME EPL AWS
+ -->
+<!--  LocalWords:  GitHub affta Noninteractive setf boundp Accessor
+ -->
+<!--  LocalWords:  Undefine defsuite defgoals ASDF paramterization EB
+ -->
+<!--  LocalWords:  MIDE McCLIM Climacs Drei ESA IDE VirtualBox MKTEST
+ -->
+<!--  LocalWords:  FS BeagleBone Metadata metadata REPL Monadic asdf
+ -->
+<!--  LocalWords:  Diadic Variadic superclasses Runtime  defclass MCi
+ -->
+<!--  LocalWords:  OpenOffice CLtL DFSG CLIM SNS ROOTFS Diigo CCL SMS
+ -->
+<!--  LocalWords:  SBCL src
+ -->
