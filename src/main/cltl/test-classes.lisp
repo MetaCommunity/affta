@@ -90,13 +90,20 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
    ;; NOTE: The following slots are defined with non-conventional
    ;; accessors, below.
    (setup-function
-    :initarg :setup-function)
+    ;; FIXME: Define SETUP-FUNCTION-FORM additionally?
+    ;; FIXME: Document the usage/non-usage of this slot value.
+    ;;        See also: `DO-TEST-SETUP'
+    :initarg :setup-function
+    :accessor %test-setup-function)
    (cleanup-function
-    :initarg :cleanup-function)
+    ;; FIXME: Define CLEANUP-FUNCTION-FORM additionally?
+    ;; FIXME: Document the usage/non-usage of this slot value.
+    ;;        See also: `DO-TEST-CLEANUP'
+    :initarg :cleanup-function
+    :accessor %test-cleanup-function)
    ))
 
 (defgeneric test-setup-function (test)
-  
   ;;
   ;; (values (or null function) boolean)
   ;;
@@ -109,11 +116,10 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   (:method ((test test))
     (cond
       ((slot-boundp test 'setup-function)
-       (values (test-setup-function test) t))
+       (values (%test-setup-function test) t))
       (t (values nil nil)))))
 
 (defgeneric test-cleanup-function (test)
-  
   ;; 
   ;;
   ;; (values (or null function) boolean)
@@ -127,7 +133,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   (:method ((test test))
     (cond
       ((slot-boundp test 'cleanup-function)
-       (values (test-cleanup-function test) t))
+       (values (%test-cleanup-function test) t))
       (t (values nil nil)))))
 
 
@@ -203,6 +209,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   ())
 
 (defmethod format-test-label ((test functional-test) (stream stream))
+  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (multiple-value-bind (fn boundp)
       (slot-value* test 'object)
     (when boundp
