@@ -136,6 +136,19 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
        (values (%test-cleanup-function test) t))
       (t (values nil nil)))))
 
+(defgeneric (setf test-setup-function) (new-value test)
+  (:method ((new-value function) (test test))
+    (setf (%test-cleanup-function test) new-value))
+  (:method ((new-value list) (test test))
+    (let ((fn (compile* new-value)))
+      (setf (test-setup-function test) fn))))
+
+(defgeneric (setf test-cleanup-function) (new-value test)
+  (:method ((new-value function) (test test))
+    (setf (%test-cleanup-function test) new-value))
+  (:method ((new-value list) (test test))
+    (let ((fn (compile* new-value)))
+      (setf (test-cleanup-function test) fn))))
 
 (declaim (type string %unbound-slot-label%))
 
