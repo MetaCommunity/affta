@@ -42,7 +42,13 @@ The primary source tree for AFFTA is hosted at GitHub:
 * Focusing on the `info.metacommunity.cltl.utils` system,
   develop `CLASS-PROTOCOL-TEST`
 
-* Develop _use case_ example for `CLASS-PROTOCOL-TEST`, towards definition of a portable `READ-WRITE-LOCK` for _Bordeaux Threads_
+* Develop _use case_ example for `CLASS-PROTOCOL-TEST`
+    * e.g. towards definition of a portable `READ-WRITE-LOCK` for
+      _Bordeaux Threads_
+    * altrenately, referencing
+      [igneous-math](https://github.com/MetaCommunity/igneous-math)
+    * Issue: What would be the distinguishing characteristics of a
+      _class-protocol test_, broadly?
 
 * [COMPLETED] Focusing on `test-protocol.lisp`, revise the primary test protocol so as to accept a single TEST-SPECIFIER argument in each of:
 
@@ -55,7 +61,9 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 * [COMPLETED] Revise DO-TEST, DO-TEST-SETUP, DO-TEST-CLEANUP for test paramterization, cf. TEST-GOAL
 
-* Remove DO-RECORDED-TEST, ensuring that stand-alone comments within the definition body [source code] are moved into seperate documentation files
+* [COMPLETED] Remove DO-RECORDED-TEST [unused], ensuring that stand-alone comments
+  within the definition body [source code] are moved into seperate
+  documentation files
 
 * [COMPLETED] Ensure that all "top-level" types and interfaces are available externally from within #:TEST
 
@@ -64,7 +72,8 @@ The primary source tree for AFFTA is hosted at GitHub:
 
 **TO DO:**
 
-* Move UNION-STREAM comments into normative documentation (OpenOffice)
+* [COMPLETED] Move UNION-STREAM comments into normative
+  documentation - see `README-streams.md`
 
 * Continue with revisions onto other AFFTA-1.3 version-context goals
 
@@ -257,7 +266,7 @@ The primary source tree for AFFTA is hosted at GitHub:
   develop an application notificiation protocol for test results
 
 * Developing MCi AFFTA in parallel with the MCi `APPLCIATION` system, 
-  implementing the `UNION-STREAM` specification (presently denoted in
+  implement the `UNION-STREAM` specification (presently denoted in
   test-protocol.lisp)
 
 * Provide CLIM integration for `FORMAT-TEST-LABEL`
