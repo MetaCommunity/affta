@@ -134,15 +134,18 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (declaim (type string %unbound-slot-label%))
 
 (defmethod format-test-label ((test test) (stream stream))
+  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (format stream "[~A] ~A" 
           (class-name (class-of test))
           (slot-value* test 'object %unbound-slot-label%)))
 
 (defmethod label ((object test))
+  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (with-output-to-string (s)
     (format-test-label object s)))
 
 (defmethod print-object ((test test) stream)
+  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (print-unreadable-object (test stream :type t :identity t)
     (format-test-label test stream)))
 
@@ -206,19 +209,5 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
       (format stream "[~A] ~A" 
               (class-name (class-of test))
               (function-name (test-object test))))))
-
-
-
-(defclass functional-setf-test (functional-test)
-  ;; in which the TEST-OBJECT is assumed to designate a setf form
-  ;; FIXME: Develop a use case, e.g. onto CLIM multiple-value-setf
-  ())
-
-
-(defclass class-protocol-test (lisp-test)
-  ;; in which the TEST-OBJECT is assumed to designate a class
-  ;; see also: UTILS:COMPUTE-CLASS
-  ;; FIXME: Develop a use case, e.g. towards a portable READ-WRITE-LOCK
-  ())
 
 
