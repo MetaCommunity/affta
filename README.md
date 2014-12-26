@@ -216,7 +216,11 @@ systems testing, of components not defined in Common Lisp.
       `DEFGOALS`, `RUN-SUITE` (See previous documentation/notes)
     * Develop prototype for structured test reporting (XML?)
 
-* Sidebar: **Granite MIDE** - Develop ASDF extension for exporting remote AWS image
+* Sidebar: **Granite MIDE** - Develop ASDF extension for exporting
+  remote AWS image
+    * Concept: Component-oriented systems development
+    * Concept: Host virtualization
+    * Concept: Software-Defined Networking (SDN)
     * Developing application onto _EC2 API tools_, make direct reference
       to the Java API as applied in those tools -- beginning with
       those tools defined for AWS EB _image_ export 
@@ -236,7 +240,7 @@ systems testing, of components not defined in Common Lisp.
 
 * Develop initial prototype - see comments in [test-protocol.lisp][test-protocol]
         
-    * **AFFTA** [Manual] (AFFTA 1.2)
+    * **AFFTA** [Manual] - AFFTA 1.2
         * Begin writing reference manual for AFFTA
         * Format: TBD
         * Sections
