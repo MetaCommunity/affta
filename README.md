@@ -13,7 +13,7 @@ _(TBD. API is in revision, towards AFFTA 1.3+)_
 AFFTA 1.3 depends on the following systems:
 
 * [info.metacommunity.cltl.utils][mci-cltl-utils]
-* [info.metacommunity.cltl.application][dobelle-app]
+* [info.metacommunity.cltl.application][dobelle-app] ;; FIXME: _Need not._
 
 ## Licensing
 
@@ -21,13 +21,95 @@ AFFTA is licensed under the terms of the [Eclipse Public License 1.0][EPL]
 
 ## Availability
 
-The primary source tree for AFFTA is hosted at GitHub:
+The primary source tree for AFFTA is hosted at [GitHub](http://www.github.com/).
 
-[git@github.com:MetaCommunity/affta.git][affta]
+Git URL (SSH): [git@github.com:MetaCommunity/affta.git][affta]
 
+
+## Reference
+
+### Test Protocol Concepts
+
+#### Test Protocol Concepts - Outline
+
+* Test Classes
+    * `Test` - the primary protocol class of this system
+    * `Lisp-Test` - a protocol class for tests onto Lisp forms
+    * `Functional-Test` FIXME: Will be undefined in AFFTA 1.3;
+      effectively redundant to `LISP-TEST`
+    * _Blue sky: Additional test classes may be defined for testing of
+      systems outside of the Common Lisp implementation environment_
+* Test Structures
+    * Test Body
+    * Optional Test Structures
+        * Test Setup Function / Method
+        * Test Cleanup Function / Method
+        * In short: This system provides three primary ways to define
+          each of a _test setup_ or _test cleanup_ procedure for any
+          single _test_ object:
+            * By providing a _lambda form_ or _function_ to either of
+              the `:setup-function` or `:cleanup-function` 
+              initialization arguments, respectively, when
+              initializating a `test` object
+            * By specifying a _function_ or _lambda form_ via either
+              `(setf test-setup-function)` or `(setf
+              test-cleanup-function)` respectively 
+            * By defining a method specialized onto either of the
+              generic functions `do-test-setup` or `do-test-cleanup`
+                * The _system supplied primary method_ for each of
+                  those generic functions will call, respectively, the
+                  `test-setup-function` or `test-cleanup-function` for
+                  the _test_ -- when either of those is defined to the
+                  _test_ (cf. `cl:slot-boundp`, `utils:slot-value*`)
+                * The behaviors are unspecified if a method
+                  specializing either `do-test-setup` or
+                  `do-test-cleanup` would not apply a bound value for
+                  the `test-setup-function` or
+                  `test-cleanup-function`, respectively.
+* Test Goals
+    * Test Parameters
+    * Expected Return Value(s)
+* Test Application
+    * Test Setup Function (Optional)
+    * Test Body
+    * Test Cleanup Function (Optioal)
+    * Testing for return values
+
+
+### Test Protocol Dictionary
+
+* `test` [Standard Class]
+* `test-predicate`, `test-predicate-function`, `test-name`, `test-object` [Accessor]
+* `test-setup-function`, `(setf test-setup-function)` [Generic Function
+* `test-cleanup-function`, `(setf test-cleanup-function)` [Generic Function]
+* `lisp-test` [Standard Class]
+* `test-lambda-form`, `test-lambda-function` [Accessor]
+* `functional-test` [Standard Class] FIXME: Undefine; use LISP-TEST instead
+* `do-test-setup` [Generic Function]
+* `do-test-cleanup` [Generic Function]
+* `do-test` [Generic Function]
+* TO DO: `with-test` [Macro]
+* TO DO: `run-test` [Function]
+    * per _goals specified when run-test is evaluated_
+* TO DO: `defsuite` [Macro]
+* TO DO: `deftest` [Macro]
+* TO DO: `defgoals` [Macro]
+* TO DO: `run-suite` [Function]
+    * per _goals defined with defgoals_
+
+### Test Reporting Concepts
+
+* Interactive Reports
+    * Instance Tests
+* Structured Reports
+    * Interactive Tests
+    * Batch Tests
+
+### Test Reporting Dictionary
+
+* ...
 
 ## Development Plan
-
 
 ### AFFTA-1.3
 
