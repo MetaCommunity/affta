@@ -1,5 +1,9 @@
 ;; test-classes.lisp - protocol classes [AFFTA]
 
+;; FIXME: Once AFFTA test-interfaces is defined,
+;;        then define tests for:
+;;  1. ASSOCIATIVE-INDEX and subclasses
+;;  2. TEST-SUITE and TEST registry protocol (presently mirroring ASSOCIATIVE-INDEX protocol)
 
 (in-package #:info.metacommunity.cltl.test)
 
@@ -223,10 +227,9 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (multiple-value-bind (fn boundp)
       (slot-value* test 'object)
-    (when boundp
-      (format stream "[~A] ~A" 
-              (class-name (class-of test))
-              (function-name (test-object test))))))
+    (format stream "~A [~A]" 
+            (class-name (class-of test))
+            (when boundp (function-name fn)))))
 
 
 (defgeneric %test-suite-tests (suite))
@@ -244,8 +247,8 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
      :type class-designator 
      :accessor test-suite-default-test-class))
   (:metaclass associative-class)
-  (:key-slot utils::name)
-  (:deault-initargs :key-function #'object-name))
+  (:key-slot . utils::name)
+  (:default-initargs :key-function #'object-name))
 
 
 
@@ -255,13 +258,14 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
                                         (print-name nil pnp)
                                         (print-label nil plp)
                                         (name nil namep))
+  (declare (ignore print-name print-label))
   (let (args-changedp)
     (when namep
-      (unless pnp
+      (unless (or pnp (slot-boundp instance 'utils::print-name))
         (setf args-changedp t
               (getf initargs :print-name)
               (symbol-name name)))
-      (unless plp
+      (unless (or plp (slot-boundp instance 'utils::print-label))
         (setf args-changedp t
               (getf initargs :print-label)
               (symbol-name name))))
