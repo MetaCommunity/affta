@@ -1,5 +1,6 @@
 ;; test-classes.lisp - protocol classes [AFFTA]
 
+
 (in-package #:info.metacommunity.cltl.test)
 
 (defgeneric test-predicate (test))
@@ -8,6 +9,7 @@
 ;; ^ FIXME: Remove?
 
 (defgeneric test-name (test))
+;; ^ FIXXME: Replaced by OBJECT-NAME
 
 (defgeneric test-object (test))
 
@@ -232,7 +234,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (defgeneric test-suite-default-test-class (suite))
 (defgeneric (setf test-suite-default-test-class) (new-value suite))
 
-(defclass test-suite (associative-object pretty-printable-object)
+(defclass test-suite (simple-associative-index pretty-printable-object)
   ((%tests
     :reader %test-suite-tests
     :initform (make-hash-table :test #'eq))
@@ -240,7 +242,12 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
        :initarg :default-test-class
      :initform (find-class 'lisp-test)
      :type class-designator 
-     :accessor test-suite-default-test-class)))
+     :accessor test-suite-default-test-class))
+  (:metaclass associative-class)
+  (:key-slot utils::name)
+  (:deault-initargs :key-function #'object-name))
+
+
 
 (defmethod shared-initialize :around ((instance test-suite)
                                       slot-names &rest initargs
@@ -273,23 +280,38 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   (print-unreadable-object (object stream :type t :identity t)
     (print-label object stream)))
 
-(defgeneric register-test-suite (instance container))
+(defgeneric register-test-suite (instance)
+  (:method ((instance test-suite))
+    (register-object instance (find-class 'test-suite))))
 
-(defgeneric find-test-suite (name container))
+(defgeneric find-test-suite (name &optional errorp)
+  (:method ((name symbol) &optional (errorp t))
+    (find-object name (find-class 'test-suite) errorp)))
 
-(defgeneric remove-test-suite (instance container))
+(defgeneric remove-test-suite (instance)
+  (:method ((instance test-suite))
+    (remove-object (object-name instance) 
+                   (find-class 'test-suite))))
 
+(defgeneric map-test-suites (function)
+  (:method (function)
+    (map-tests (coerce function 'function) suite))
+  (:method ((function function))
+    (map-objects fn (find-class 'test-suite))))
+
+
+(defgeneric add-test (test suite)
+  (:method ((test test) (suite test-suite))
+    (register-object test suite)))
+
+(defgeneric remove-test (test suite)
+  (:method ((test test) (suite test-suite))
+    (remove-object test suite)))
+
+(defgeneric find-test (name suite &optional errorp)
+  (:method ((name symbol) (suite test-suite) &optional (errorp t))
+    (find-object name suite errorp)))
 
 (defgeneric map-tests (function suite)
   (:method (function (suite test-suite))
-    (map-tests (coerce function 'function) suite))
-  (:method ((function function) (suite test-suite))
-    (let ((tests (%test-suite-tests suite)))
-      (labels ((fncall (k v)
-                 (declare (ignore k))
-                 (funcall function v)))
-        (maphash #'fncall tests)))))
-
-(defgeneric add-test (test suite))
-
-(defgeneric remove-test (test suite))
+    (map-objects function suite)))
