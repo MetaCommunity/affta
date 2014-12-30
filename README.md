@@ -13,7 +13,7 @@ _(TBD. API is in revision, towards AFFTA 1.3+)_
 AFFTA 1.3 depends on the following systems:
 
 * [info.metacommunity.cltl.utils][mci-cltl-utils]
-* [info.metacommunity.cltl.application][dobelle-app] ;; FIXME: _Need not._
+* [info.metacommunity.cltl.utils.mop][mci-cltl-utils]
 
 ## Licensing
 
