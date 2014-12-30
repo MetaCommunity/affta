@@ -47,15 +47,10 @@
      #:test-lambda-form
      #:test-lambda-function
 
-     #:functional-test
-     ;; #:functional-setup-test ;;; not yet implemented
-     ;; #:class-protocol-test ;;; not yet implemented
-
      ;; test-protocol.lisp
      #:do-test-setup
      #:do-test-cleanup
      #:do-test
-
 
      ;; test-recording.lisp
      #:test-utility-test

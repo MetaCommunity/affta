@@ -27,7 +27,7 @@
 
 
 (defgeneric do-test  (goal test)
-  (:method ((goal lisp-test-goal) (test functional-test))
+  (:method ((goal lisp-test-goal) (test lisp-test))
     (apply (test-lambda-function test)
            (test-parameters goal)))
 
@@ -93,7 +93,7 @@ Example:
                                  (declare (ignore form))
                                  (gensym "parameter-"))
                              params))
-             (test (make-instance 'functional-test 
+             (test (make-instance 'lisp-test
                                   :object test
                                   :lambda
                                   `(lambda (,@p-list)
@@ -215,7 +215,7 @@ Example:
 
       ;; support a syntax similar to ASDF:DEFSYSTEM
       (:class test-suite)
-    (:default-component-class functional-test)
+    (:default-component-class lisp-test)
     (:depends-on #:info.metacommunity.cltl.utils))
   
   (in-test-suite utils-test-suite-1)
@@ -253,7 +253,7 @@ Example:
                     (context (get-current-test-suite)))
   (with-gensym (test record)
     `(when-test-load ;; ...
-      (let* ((,test (make-instance 'functional-test
+      (let* ((,test (make-instance 'lisp-test
                                    :function ,function))
              (,record (.... :test ,test
                             .... (quote ,args) 

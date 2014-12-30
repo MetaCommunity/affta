@@ -14,7 +14,7 @@
 (defvar %default-equivalence-function% #'equalp)
 
 (defgeneric test-predicate (test)
-  (:method ((test functional-test))
+  (:method ((test lisp-test))
     (values %default-equivalence-function%)))
 ;; ^ FIXME : Remove (?) or move into test-record.lisp
 
@@ -152,7 +152,7 @@
       (t (princ nil stream)))))
 
 (defgeneric ensure-test-record (goal test)
-  (:method ((goal lisp-test-goal) (test functional-test))
+  (:method ((goal lisp-test-goal) (test lisp-test))
     ;; NOTE: TEST-RECORD was defined primarily for application in
     ;; functional testing. Proceeding to definition of additional
     ;; testing applications, TEST-RECORD may be revised.

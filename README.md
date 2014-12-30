@@ -59,7 +59,6 @@ systems testing, of components not defined in Common Lisp.
 * Test Classes
     * `Test` - the primary protocol class of this system
     * `Lisp-Test` - a protocol class for tests onto Lisp forms
-    * `Functional-Test` FIXME: Will be undefined in AFFTA 1.3;
       effectively redundant to `LISP-TEST`
     * _Blue sky: Additional test classes may be defined for testing of
       systems outside of the Common Lisp implementation environment_
@@ -109,7 +108,6 @@ systems testing, of components not defined in Common Lisp.
 * `test-cleanup-function`, `(setf test-cleanup-function)` [Generic Function]
 * `lisp-test` [Standard Class]
 * `test-lambda-form`, `test-lambda-function` [Accessor]
-* `functional-test` [Standard Class] FIXME: Undefine; use LISP-TEST instead
 * `test-goal` [Standard Class]
     * Summary: Effectively, a test goal `B` encapsulates a test `A`,
       also storing a set of structural qualities for application of `A`
@@ -172,8 +170,6 @@ systems testing, of components not defined in Common Lisp.
 * [COMPLETED] Develop test recording framework, separate from test definition framework
 
 * Develop a 'TEST-SUITE' class; Integrate w/ ASDF
-
-* [COMPLETED] Focusing on `test-classes.lisp`, implement `FUNCTIONAL-TEST`
 
 * Focusing on the `info.metacommunity.cltl.utils` system,
   develop `CLASS-PROTOCOL-TEST`
