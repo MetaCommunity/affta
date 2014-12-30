@@ -47,7 +47,26 @@
      #:test-lambda-form
      #:test-lambda-function
 
+     #:test-suite
+     #:test-suite-default-test-class
+     #:register-test-suite
+     #:find-test-suite
+     #:remove-test-suite
+     #:map-tests
+     #:add-test
+     #:remove-test
+     
      ;; test-protocol.lisp
+     #:defsuite
+     #:deftest
+     #:defgoals
+     #:run-test-suite
+
+     #:with-test ;; TO DO
+     #:run-test  ;; TO DO
+     ;; e.g. (Igneous-Math)
+     ;;   (with-test (test measurement-magnitude-degree measure-tests-1) (run-test test 1 :|kg|))
+     
      #:do-test-setup
      #:do-test-cleanup
      #:do-test

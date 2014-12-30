@@ -83,7 +83,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 ;;;; Test
 
-(defclass test (labeled-object)
+(defclass test (associative-object pretty-printable-object)
   ((object
     :initarg :object
     :accessor test-object)
@@ -227,3 +227,69 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
               (function-name (test-object test))))))
 
 
+(defgeneric %test-suite-tests (suite))
+
+(defgeneric test-suite-default-test-class (suite))
+(defgeneric (setf test-suite-default-test-class) (new-value suite))
+
+(defclass test-suite (associative-object pretty-printable-object)
+  ((%tests
+    :reader %test-suite-tests
+    :initform (make-hash-table :test #'eq))
+   (default-test-class
+       :initarg :default-test-class
+     :initform (find-class 'lisp-test)
+     :type class-designator 
+     :accessor test-suite-default-test-class)))
+
+(defmethod shared-initialize :around ((instance test-suite)
+                                      slot-names &rest initargs
+                                      &key 
+                                        (print-name nil pnp)
+                                        (print-label nil plp)
+                                        (name nil namep))
+  (let (args-changedp)
+    (when namep
+      (unless pnp
+        (setf args-changedp t
+              (getf initargs :print-name)
+              (symbol-name name)))
+      (unless plp
+        (setf args-changedp t
+              (getf initargs :print-label)
+              (symbol-name name))))
+    (cond
+      (args-changedp (apply #'call-next-method instance slot-names initargs))
+      (t (call-next-metod)))))
+
+(defmethod print-label ((object test-suite) (stream stream))
+  (let ((name (ignore-errors (object-name object)))
+        (%tests (ignore-errors (%test-suite-tests object))))
+    (format stream "~A (~A tests)" name 
+            (when %tests
+              (hash-table-count %tests)))))
+
+(defmethod print-object ((object test-suite) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (print-label object stream)))
+
+(defgeneric register-test-suite (instance container))
+
+(defgeneric find-test-suite (name container))
+
+(defgeneric remove-test-suite (instance container))
+
+
+(defgeneric map-tests (function suite)
+  (:method (function (suite test-suite))
+    (map-tests (coerce function 'function) suite))
+  (:method ((function function) (suite test-suite))
+    (let ((tests (%test-suite-tests suite)))
+      (labels ((fncall (k v)
+                 (declare (ignore k))
+                 (funcall function v)))
+        (maphash #'fncall tests)))))
+
+(defgeneric add-test (test suite))
+
+(defgeneric remove-test (test suite))
