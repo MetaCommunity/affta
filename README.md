@@ -161,6 +161,15 @@ systems testing, of components not defined in Common Lisp.
 * `test-component` (To Do) [Standard Class] 
 
 
+### Examples in Application (Early Edition)
+
+* [Igneous-Math](https://github.com/MetaCommunity/igneous-math)
+    * [`measure-test.lisp`](https://github.com/MetaCommunity/igneous-math/blob/master/src/test/cltl/measure-test.lisp)
+* [MCi CLtL Utilities](https://github.com/MetaCommunity/mci-cltl-utils)
+    * [MCi MOP Utilities](https://github.com/MetaCommunity/mci-cltl-utils/tree/master/src/main/cltl/mop) - _TO DO_
+* [AFFTA][affta] itself
+
+
 ## Development Plan
 
 ### AFFTA-1.3
