@@ -47,6 +47,10 @@
           ("test-classes" 
            "test-recording"
            ))
+   (:file "test-interface"
+          :depends-on 
+          ("test-classes"
+           ))
 
    #+UNUSED
    (:file "predicates"
