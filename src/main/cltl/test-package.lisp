@@ -14,8 +14,9 @@
      )
 
     (:use
-     #:info.metacommunity.cltl.application ;; cf. LABELED-OBJECT, #'NOTIFY
+     #+NIL #:info.metacommunity.cltl.application ;; cf. LABELED-OBJECT, #'NOTIFY
      #:info.metacommunity.cltl.utils
+     #:info.metacommunity.cltl.utils.mop
      ;; #+CLOSER-MOP #:c2mop 
      #:cl
      )
@@ -51,8 +52,7 @@
      #:test-suite-default-test-class
      #:register-test-suite
      #:find-test-suite
-     #:remove-test-suite
-     #:map-tests
+     #:remove-test-suite     #:map-tests
      #:add-test
      #:remove-test
      

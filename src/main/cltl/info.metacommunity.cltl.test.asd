@@ -17,7 +17,8 @@
   :license "https://github.com/MetaCommunity/affta/blob/master/LICENSE"
   
   :depends-on (#:info.metacommunity.cltl.utils
-               #:info.metacommunity.cltl.application
+               #+NIL #:info.metacommunity.cltl.application
+               #:info.metacommunity.cltl.utils.mop
                )
 
   :components 
