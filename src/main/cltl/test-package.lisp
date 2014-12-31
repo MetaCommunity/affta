@@ -36,8 +36,6 @@
 
      ;; test-classes.lisp
      #:test-predicate
-     #:test-predicate-function
-     #:test-name
      #:test-object
      #:test-setup-function
      #:test-cleanup-function
