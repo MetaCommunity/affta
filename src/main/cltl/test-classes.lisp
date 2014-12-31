@@ -7,15 +7,11 @@
 
 (in-package #:info.metacommunity.cltl.test)
 
-(defgeneric test-predicate (test))
-
-(defgeneric test-predicate-function (test))
-;; ^ FIXME: Remove?
-
-(defgeneric test-name (test))
-;; ^ FIXXME: Replaced by OBJECT-NAME
-
 (defgeneric test-object (test))
+(defgeneric (setf test-object) (new-value test))
+
+(defgeneric test-summary (test))
+(defgeneric (setf test-summary) (new-value test))
 
 (defgeneric test-setup-function (test)
   (:documentation "Functional test setup protocol.
@@ -90,9 +86,15 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 ;;;; Test
 
 (defclass test (associative-object pretty-printable-object)
+  ;; FIXME: add slot SUITE (?)
   ((object
     :initarg :object
     :accessor test-object)
+   (summary
+    :initarg :summary
+    :initform nil
+    :accessor test-summary
+    :type (or string null))
    ;; NOTE: The following slots are defined with non-conventional
    ;; accessors, below.
    (setup-function
@@ -109,7 +111,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
     :accessor %test-cleanup-function)
    ))
 
-(defgeneric test-setup-function (test)
+(defmethod test-setup-function ((test test))
   ;;
   ;; (values (or null function) boolean)
   ;;
@@ -119,13 +121,12 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   ;;
   ;; function would be called before the test's primary method is
   ;; evaluated within DO-TEST
-  (:method ((test test))
-    (cond
-      ((slot-boundp test 'setup-function)
-       (values (%test-setup-function test) t))
-      (t (values nil nil)))))
+  (cond
+    ((slot-boundp test 'setup-function)
+     (values (%test-setup-function test) t))
+    (t (values nil nil))))
 
-(defgeneric test-cleanup-function (test)
+(defmethod test-cleanup-function ((test test))
   ;; 
   ;;
   ;; (values (or null function) boolean)
@@ -136,15 +137,15 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   ;;
   ;; function would be called within the cleanup forms of an
   ;; unwind-protect form within DO-TEST
-  (:method ((test test))
-    (cond
-      ((slot-boundp test 'cleanup-function)
-       (values (%test-cleanup-function test) t))
-      (t (values nil nil)))))
+  (cond
+    ((slot-boundp test 'cleanup-function)
+     (values (%test-cleanup-function test) t))
+    (t (values nil nil))))
+
 
 (defgeneric (setf test-setup-function) (new-value test)
   (:method ((new-value function) (test test))
-    (setf (%test-cleanup-function test) new-value))
+    (setf (%test-setup-function test) new-value))
   (:method ((new-value list) (test test))
     (let ((fn (compile* new-value)))
       (setf (test-setup-function test) fn))))
