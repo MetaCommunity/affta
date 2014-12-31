@@ -79,7 +79,7 @@ development.
     * Concept: Component-oriented functional testing
     * _Batch tests_ may be defined in files seperate to, or inline
       with _source forms_ of software code being tested
-        * If defined _external_ to _objects of test_, the _source
+        * If defined _external_ to the _objects of test_, the _source
           forms_ for _test_ objects may be defined -- whether deifned
           directly, as with explicit component definitions, or
           defined indirectly, as within a systems reflection framework 
@@ -87,9 +87,9 @@ development.
          _software components_ may then be compiled and applied
          seperate to the _source forms_ of the _objects of test_, 
          namely as within a software component framework such as
-         [ASDF][asdf] in Common Lisp, or in the Java Development Kit,
-         [Apache Maven][mvn]
-        * If defined _inline_ with _objects of test_, the _source forms_
+         [ASDF][asdf] in Common Lisp, or in applications of the Java
+         Development Kit, [Apache Maven][mvn]
+        * If defined _inline_ with the _objects of test_, the _source forms_
           for _test_ objects may be _conditionally escaped_ with
           _compiler flags_ -- as would be applied in a syntax specific
           to the programning language in the application -- such as to
@@ -117,7 +117,9 @@ environment.
 In [AFFTA][affta], a _test_ is defined with a _main function_.
 Furthermore, a _setup function_ and/or a _cleanup function_ may also
 be defined to a _test_ `;;; FIXME:` Should also allow definition
-of _cleanup function_ and _setup function_ to a _test suite_. 
+of _cleanup function_ and _setup function_ to a _test suite_, such
+that the respective setup/cleanup functions would allocate resources
+required for more than one _test_ defined within the _suite_.
 
 A _test goal_ should provide parameters to a test's _main function_,
 and may provide parameters to a test's _setup_ and _cleanup_
