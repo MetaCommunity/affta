@@ -237,7 +237,9 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (defgeneric test-suite-default-test-class (suite))
 (defgeneric (setf test-suite-default-test-class) (new-value suite))
 
-(defclass test-suite (simple-associative-index pretty-printable-object)
+(defclass test-suite (simple-associative-index 
+                      associative-object
+                      pretty-printable-object)
   ((%tests
     :reader %test-suite-tests
     :initform (make-hash-table :test #'eq))
