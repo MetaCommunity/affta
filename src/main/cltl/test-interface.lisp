@@ -16,11 +16,11 @@
   (defsuite geometry-test-suite-1
       (:class test-suite))
   
-  (deftest radians-to-degrees-1 geometry-test-suite-1
+  (deftest radians-to-degrees-1 (geometry-test-suite-1)
     (:object #'radians-to-degrees)
     (:summary "Ensure...")
-    (:setup-lamba ()) ;; no-op
-    (:cleanup-lamba ()) ;; no-op    
+    ;; (:setup-lamba ()) ;; no-op
+    ;; (:cleanup-lamba ()) ;; no-op    
     (:lambda (theta)
       (radians-to-degrees theta)))
 
@@ -60,6 +60,8 @@
   (in-test-suite utils-test-suite-1) ;; X
 
   (deftest compute-class-1 (ident)
+    ;; DEFTEST-LIKE-DEFUN - Obosolete prototype
+    ;; See also: measure-test.lisp in the igneous-math system
     "Ensure..."
     (compute-class ident))
   
@@ -101,43 +103,71 @@
          (do-recorded-test ,record *standard-output*))))))
                     
 
+(defmacro with-properties ((properties) &body body)
+  "Evaluate BODY within a lexical environment in which the following
+functions are defined: 
+
+* `FORMAT-PROPERTY'
+* `FIND-PROPERTY'
+* `MAP-PROPERTIES'
+
+The functions `FIND-PROPERTY' and `MAP-PROPERTIES' will operate on
+the list, `properties'
+
+This macro provides a utility interface for a macro providing
+a definition form of a syntax similar to to DEFCLASS."
+  (with-gensym (p)
+    `(let ((,p (copy-list ,properties)))
+       (labels ((format-property (spec)
+                  (destructuring-bind (name . value) spec
+                    (declare (ignore name))
+                    (cond
+                      ((and (consp value) (cdr value))
+                       (values value))
+                      ((consp value) 
+                       (values (car value)))
+                      (value 
+                       (values value))
+                      (t (values)))))
+                (find-property (name &optional default)
+                  (let ((spec (assoc name ,p :test #'eq)))
+                    (cond 
+                      (spec (setf ,p (delete spec ,p :test #'eq))
+                            (values (format-property spec) t))
+                      (t (values default nil)))))
+                (map-properties ()
+                  (mapcan (lambda (spec)
+                            (destructuring-bind (name . value) spec
+                              (list name (format-property spec))))
+                          ,p)))
+         ,@body))))
+
+
+#+NIL ;; instance test
+(let ((p '((:a "A") (:b 2) (:c #:|3|))))
+  (with-properties (p)
+    (values (find-property :c)
+            (map-properties))))
+
+;;; DEFSUITE
 
 (defmacro defsuite (name &rest properties
                            &aux (default-class 'test-suite)
                              (default-test-class 'lisp-test))
-  (let ((p (copy-list properties)))
-    (labels ((format-spec (spec)
-               (destructuring-bind (name . value) spec
-                 (declare (ignore name))
-                 (cond
-                   ((cdr value) (values value))
-                   (t (values (car value))))))
-             (find-spec (name &optional default)
-               (let ((spec (assoc name p :test #'eq)))
-                 (cond 
-                   (spec (setf p (delete spec p :test #'eq))
-                         (values (format-spec spec) t))
-                   (t (values default nil)))))
-             (format-properties ()
-               (mapcan (lambda (spec)
-                         (multiple-value-bind (name . value) spec
-                           (cond
-                             ((cdr value) spec)
-                             (t (list name (car value))))))
-                       p)))
-      (with-gensym (class instance dtc)
-        `(let* ((,class (quote ,(find-spec :class (find-class default-class))))
-                ;; note that all initarg values except for :CLASS, :NAME,
-                ;; :DEFAULT-TEST-CLASS  will be evaluated
-                ;; (FIXME: This is "cheap")
-                (,dtc (quote ,(find-spec :default-test-class 
-                                         (find-class default-test-class))))
-                (,instance (make-instance ,class 
-                                          :name (quote ,name)
-                                          :default-test-class ,dtc
-                                          ,@(format-properties))))
-           (register-test-suite ,instance)
-           (values ,instance))))))
+  (with-properties (properties)
+    (with-gensym (class instance dtc)
+      `(let* ((,class (quote ,(find-property :class (find-class default-class))))
+              ;; note that all initarg values except for :CLASS, :NAME,
+              ;; :DEFAULT-TEST-CLASS  will be evaluated
+              ;; (FIXME: This is "cheap")
+              (,dtc (quote ,(find-property :default-test-class 
+                                       (find-class default-test-class))))
+              (,instance (make-instance ,class 
+                                        :name (quote ,name)
+                                        :default-test-class ,dtc
+                                        ,@(map-properties))))
+         (register-test-suite ,instance)
+         (values ,instance)))))
 
 
 ;; (defsuite foo-suite)
@@ -147,9 +177,11 @@
 ;; (defsuite foo-suite (:class foo-test-suite))
 
 
+;;; *TEST-SUITE*
+
 (declaim (type test-suite *test-suite*))
 (defvar *test-suite*)
-(setf (documentation *test-suite* 'variable)
+(setf (documentation '*test-suite* 'variable)
       "Default test suite, within the active lexical environment.
 
 See also: 
@@ -178,18 +210,42 @@ See also:
   ;; for this purpose
   `(setq *test-suite* (find-test-suite (quote ,name))))
 
+;;; DEFTEST
 
-#+TO-DO
-(defmacro deftest (name (&optional (suite *test-suite*))
-                   &rest properties)
-  ;; mirror DEFSUITE FORMAT-SPEC, FIND-SPEC, FORMAT-PROPERTIES here
-  
-  ;; ...
-  )
+(defconstant* %unspecified% (make-symbol "%UNSPECIFIED%"))
+
+(defmacro deftest (name (&optional (suite *test-suite* suitep))
+                   &rest properties &environment env)
+  (with-properties (properties)
+    (let* ((lp (find-property :lambda %unspecified%))
+           (ob (find-property :object)) ;; will be evaluted
+           (n (find-property :name %unspecified%))
+           (c (find-property :class %unspecified%)))
+      (when (eq lp %unspecified%)
+        (error "DEFTEST ~S absent of :LAMBDA property" name))
+      (with-gensym (%suite class test object %name)
+        `(let* ((,%suite ,(if suitep 
+                               `(find-test-suite (quote ,suite) t)
+                               `(values *test-suite*)))
+                (,class ,(if (eq c %unspecified%)
+                             `(test-suite-default-test-class ,%suite)
+                             `(find-class ,c t ,env)))
+                (,object ,(values ob))
+                (,%name ,(if (eq n %unspecified%)
+                             `(gentemp "UNSPECIFIED-")
+                             `(quote ,n)))
+                  ;; FIXME: :LAMBDA only applicable for LISP-TEST
+                (,test (make-instance ,class
+                                      :name ,%name
+                                      :object ,object
+                                      :lambda (lambda ,@lp)
+                                      ,@(map-properties))))
+           (add-test ,test ,%suite)
+           (values ,test ,%suite))))))
 
 #+TO-DO
 (defmacro defgoals (name (test &optional (suite *test-suite*))
                     &rest properties)
-  ;; mirror DEFSUITE FORMAT-SPEC, FIND-SPEC, FORMAT-PROPERTIES here  
-
-  )
+  (with-properties (properties)
+    
+    ))
