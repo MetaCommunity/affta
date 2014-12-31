@@ -52,7 +52,7 @@ Lisp source code, the functional interface for [AFFTA][affta] has been
 defined such that it may be applied for procedures of structured
 systems testing, of components not defined in Common Lisp.
 
-### Test Protocol Concepts
+### Test Protocol - Concepts - Overview
 
 In [AFFTA][affta], a _test_ is defined of at least: A _test goal_ and
 a _main function_. A _setup function_ and/or a _cleanup function_ may
@@ -65,28 +65,30 @@ _test goal_ should also provide values to be compared to any values
 returned by the test's _main function_, such that may be compared in
 application of a _test predicate_.
 
-A _test_ may be defined as effectively contained within a _test suite_.
+A _test_ may be defined as effectively contained -- as for purposes of 
+_test application_ and for _test reporting_ -- within a _test suite_.
 
-#### Test Protocol - Outline
+#### Test Protocol - Concepts - Outline
 
-* Test Classes
+* **Test Classes** (Baseline test protocol - AFFTA)
     * `Test` - the primary protocol class of this system
     * `Lisp-Test` - a protocol class for tests onto Lisp forms
       effectively redundant to `LISP-TEST`
     * _Blue sky: Additional test classes may be defined for testing of
-      systems outside of the Common Lisp implementation environment_
-* Test Structures
-    * Test Body
-    * Optional Test Structures
+      systems outside of the Common Lisp programming environment_
+
+* **Test Structures** (Baseline test protocol - AFFTA)
+    * Required Property: Test _main_ form
+    * Optional Properties
         * Test Setup Function / Method
         * Test Cleanup Function / Method
-        * In short: This system provides three primary ways to define
-          each of a _test setup_ or _test cleanup_ procedure for any
-          single _test_ object:
+        * In short summary: This system provides three primary ways to
+          define each of a _test setup_ or _test cleanup_ procedure
+          for any single _test_ object
             * By providing a _lambda form_ or _function_ to either of
-              the `:setup-function` or `:cleanup-function` 
-              initialization arguments, respectively, when
-              initialization a `test` object
+              the `:setup-function` or `:cleanup-function`
+              initialization arguments, respectively, when a `test`
+              object is _initialized_
             * By specifying a _function_ or _lambda form_ via either
               `(setf test-setup-function)` or `(setf
               test-cleanup-function)` respectively 
@@ -102,16 +104,43 @@ A _test_ may be defined as effectively contained within a _test suite_.
                   `do-test-cleanup` would not apply a bound value for
                   the `test-setup-function` or
                   `test-cleanup-function`, respectively.
-* Test Goals
-    * A _test goal_ represents, effectively, a container for _test
-      parameters_ and _expected return values_ onto a single _test_
-      definition
-* Test Application
-    * Test Setup Function (Optional)
-    * Test Body
-    * Test Cleanup Function (Optional)
-    * Testing for return values
 
+* **Test Containers** (Baseline test protocol - AFFTA)
+    * A _test suite_ provides an effective _container_ for _test_
+      objects
+    * _FIXME:_ Describe how _test goals_ are associated with _test
+      objects_
+      
+* **Test Goals** (Baseline test protocol - AFFTA)
+    * A _test goal_ provides a container for _test parameters_ and
+      _expected return values_ onto a single _test_ definition.
+    * An extension may define additional _properties_ to a _test
+      goal_. For example, a _test goal_ for a _shell application test_
+      may provide _properties_ such as:
+          * Configurable _parameters_ for the _shell execution
+            environment_ of the _test_
+          * A reference to a specific _filesystem directory_ to apply
+            as the _root directory_ of the _test_
+          * _Network addresses_ to be applied in the test -- as when
+            the _shell application test_ would initialize a _networked
+            application_ 
+          * Specifiers for _package name_ and _package version_
+            values, if the _shell application test_ requires specific
+            _packaged resources_ from within the _shell environment_
+
+* **Test Application** (Baseline test protocol - AFFTA)
+    * *Overview:* Generic protocol for test application from within a
+      Common Lisp programming environment
+    * Property: Test _Setup_ Function (Optional)
+    * Property: Test _Main_ Funtion
+    * Property: Test _Cleanup_ Function (Optional)
+    * Concept: Testing return values
+        * _Expected Return Values_ as provided by a _test goal_ object
+        * _Predicate_ as provided by a _test goal_ object
+        * Application of _predicate_ to _expected return values_
+
+* **Test Recording** (Baseline test protocol - AFFTA)
+    *_Reference to subsequent sections of the documentation_
 
 ### Test Protocol Dictionary
 
