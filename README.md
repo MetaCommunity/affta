@@ -54,7 +54,20 @@ systems testing, of components not defined in Common Lisp.
 
 ### Test Protocol Concepts
 
-#### Test Protocol Concepts - Outline
+In [AFFTA][affta], a _test_ is defined of at least: A _test goal_ and
+a _main function_. A _setup function_ and/or a _cleanup function_ may
+also be defined to a _test_ ;;: FIXME: Should also allow definition of
+_cleanup function_ and _setup function_ to a _test suite_.
+
+A _test goal_ may provide parameters to a test's _main function_, and
+may also provide values to a test's _setup_ and _cleanup_ functions. A
+_test goal_ should also provide values to be compared to any values
+returned by the test's _main function_, such that may be compared in
+application of a _test predicate_.
+
+A _test_ may be defined as effectively contained within a _test suite_.
+
+#### Test Protocol - Outline
 
 * Test Classes
     * `Test` - the primary protocol class of this system
@@ -103,11 +116,18 @@ systems testing, of components not defined in Common Lisp.
 ### Test Protocol Dictionary
 
 * `test` [Standard Class]
+
 * `test-predicate`, `test-predicate-function`, `test-name`, `test-object` [Accessor]
+
 * `test-setup-function`, `(setf test-setup-function)` [Generic Function]
+
 * `test-cleanup-function`, `(setf test-cleanup-function)` [Generic Function]
+
 * `lisp-test` [Standard Class]
+    * See also: `lisp-test-goal`
+    
 * `test-lambda-form`, `test-lambda-function` [Accessor]
+
 * `test-goal` [Standard Class]
     * Summary: Effectively, a test goal `B` encapsulates a test `A`,
       also storing a set of structural qualities for application of `A`
@@ -117,27 +137,44 @@ systems testing, of components not defined in Common Lisp.
       a Lisp session, or externally in a host operating system
       process)
     * See also: `test`, `test-record`
-* `lisp-test-goal` ;; FIXME: Reevaluate how this extends `test-goal`
+    
+* `lisp-test-goal` [Standard Class]  ;; FIXME: Reevaluate how this extends `test-goal`
+* `test-parameters` [Accessor]
+* `test-expect-state` [Accessor]
+* `test-predicate` [Accessor]
+
 * `do-test-setup` [Generic Function]
 * `do-test-cleanup` [Generic Function]
-* `do-test` [Generic Function]
-* TO DO: `deftest` [Macro]
-* TO DO: `with-test` [Macro]
-* TO DO: `run-test` [Function]
-    * per _goals specified when run-test is evaluated_
-* TO DO: `defsuite` [Macro]
-* TO DO: `defgoals` [Macro]
-* TO DO: `run-suite` [Function]
-    * per _goals defined with defgoals_
+* `do-test` [Generic Function] ;; FIXME: Reevaluate for alignment to RUN-TEST
+
 
 ### Test Recording Concepts
 
-* ...
+In [AFFTA][affta] a _test record_  will contain the following features:
+
+* _Goal_ provided for _test_
+* _Condition_ on completion of _test_
+* _Values_ returned by _test setup function_, if any
+* _Values_ returned by _test main function_
+* _Values_ returned by _test cleanup function_, if any
 
 ### Test Recording Dictionary
 
 * `test-record` [Standard Class]
-* ...
+
+* `test-goal` [Accessor]
+* `test-condition` [Accessor]
+* `test-main-values` [Accessor]
+* `test-setup-values` [Accessor]
+* `test-cleanup-values` [Accessor]
+
+* `test-condition` [Condition Class]
+* `test-result` [Condition Class]
+* `test-result-record` [Accessor]
+* `test-failed` [Condition Class]
+* `test-succeeded` [Condition Class]
+*  See also: `utils:format-condition` [Generic Function]
+
 
 ### Test Reporting Concepts
 
@@ -149,8 +186,18 @@ systems testing, of components not defined in Common Lisp.
 
 ### Test Reporting Dictionary
 
-* ...
+* _TBD_
 
+#### Interface Macros and Functions
+
+* TO DO: `deftest` [Macro]
+* TO DO: `with-test` [Macro]
+* TO DO: `run-test` [Function]
+    * Test execution per _goals specified when run-test is evaluated_ (?)
+* TO DO: `defsuite` [Macro]
+* TO DO: `defgoals` [Macro]
+* TO DO: `run-suite` [Function]
+    * Test execution per _goals defined with defgoals_ (?)
 
 ### ASDF System Testing Concepts
 
