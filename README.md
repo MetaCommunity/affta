@@ -21,9 +21,9 @@ AFFTA is licensed under the terms of the [Eclipse Public License 1.0][EPL]
 
 ## Availability
 
-The primary source tree for AFFTA is hosted at [GitHub](http://www.github.com/).
+The [primary source tree for AFFTA][affta] is hosted at [GitHub](http://www.github.com/).
 
-Git URL (SSH): [git@github.com:MetaCommunity/affta.git][affta]
+Git URL (SSH): [git@github.com:MetaCommunity/affta.git](git@github.com:MetaCommunity/affta.git)
 
 
 ## Reference
@@ -32,17 +32,72 @@ Git URL (SSH): [git@github.com:MetaCommunity/affta.git][affta]
 
 The [AFFTA][affta] test system is defined to address two primary
 _usage cases_ for functional systems testing, in a context of systems
-development:
-* Interactive _instance tests_
+development.
+
+* A Generic Development Process - Outline
+    1. Begin _development sprint_
+    2. Develop software
+    3. Test software
+    4. Review test results
+    5. Revise software, if appropriate
+    6. Finalize _development sprint_
+
+* Generic Concepts
+    * Concept: Objects of test
+        * Representative of specific _source forms_ such that would be
+          interpreted as to intialize an _object_ within a single
+          _software programming environment_.
+        * Initialized within the _data space_ of a single _software
+          programming environment_
+    * Concept: Tests
+        * The meaning of a concept, _test_, may vary by sense of context.
+        * In definition of tests: Representative of specific _test
+          definition_ forms.
+        * In application of tests: Representative of a functional
+          application of specific _test definitions_, per specific
+          _test goals_.
+        * In recording and reporting of test results: Representative
+          of specific _results_ of specific _test goals_ applied to
+          specific _test definitions_
+        * Corresponding Concepts
+            * Test Definition
+            * Test Goals
+            * Test Record
+            * Test Report
+
+* **Interactive _instance tests_**
     * May be defined _inline_ with source code being tested
-    * May be useful for quick debug in a rapid development _sprint_
+    * May be useful for interactive debugging, as during a rapid
+      development _sprint_ 
     * Need not be accompanied with structured test reports
-* Noninteractive _batch tests_
-    * Primary concept: Component-oriented functional testing
-    * May be defined in source files specifically for defining test
-      sessions, separate to source code being tested
-    * Should be accompanied with structured test reports
-    * Related concepts:
+    * May be developed into _batch tests_, such that would serve to
+      provide a manner of _systems reflection_, as well as some
+      exacting metrics for determiniation of _system reliability_,
+      during later _maintenance cycles_. 
+    
+* **Noninteractive _batch tests_**
+    * Concept: Component-oriented functional testing
+    * _Batch tests_ may be defined in files seperate to, or inline
+      with _source forms_ of software code being tested
+        * If defined _external_ to _objects of test_, the _source
+          forms_ for _test_ objects may be defined -- whether deifned
+          directly, as with explicit component definitions, or
+          defined indirectly, as within a systems reflection framework 
+          -- defined as individual _software components_. Those
+         _software components_ may then be compiled and applied
+         seperate to the _source forms_ of the _objects of test_, 
+         namely as within a software component framework such as
+         [ASDF][asdf] in Common Lisp, or in the Java Development Kit,
+         [Apache Maven][mvn]
+        * If defined _inline_ with _objects of test_, the _source forms_
+          for _test_ objects may be _conditionally escaped_ with
+          _compiler flags_ -- as would be applied in a syntax specific
+          to the programning language in the application -- such as to
+          prevent that those _source forms_ would be interpreted,
+          unless the_system_ is being _compiled_ for purpose of
+          _testing_
+    * Should be productive to _test reports_
+    * Corresponding Concepts
         * Regression Testing
         * Integration Testing
         * Development Metrics
@@ -50,30 +105,35 @@ development:
 Although [AFFTA][affta] was defined initially for testing of Common
 Lisp source code, the functional interface for [AFFTA][affta] has been
 defined such that it may be applied for procedures of structured
-systems testing, of components not defined in Common Lisp.
+systems testing, for evaluation of components not defined in Common
+Lisp.
 
 ### Test Protocol - Concepts - Overview
 
-In [AFFTA][affta], a _test_ is defined of at least: A _test goal_ and
-a _main function_. A _setup function_ and/or a _cleanup function_ may
-also be defined to a _test_ ;;: FIXME: Should also allow definition of
-_cleanup function_ and _setup function_ to a _test suite_.
+[AFFTA][affta] provides an object-oriented framework for functional
+testing, such as would be applied within a Common Lisp programming
+environment.
 
-A _test goal_ may provide parameters to a test's _main function_, and
-may also provide values to a test's _setup_ and _cleanup_ functions. A
-_test goal_ should also provide values to be compared to any values
-returned by the test's _main function_, such that may be compared in
-application of a _test predicate_.
+In [AFFTA][affta], a _test_ is defined with a _main function_.
+Furthermore, a _setup function_ and/or a _cleanup function_ may also
+be defined to a _test_ `;;; FIXME:` Should also allow definition
+of _cleanup function_ and _setup function_ to a _test suite_. 
 
-A _test_ may be defined as effectively contained -- as for purposes of 
-_test application_ and for _test reporting_ -- within a _test suite_.
+A _test goal_ should provide parameters to a test's _main function_,
+and may provide parameters to a test's _setup_ and _cleanup_
+functions. A _test goal_ should also provide values that may be
+compared to any values returned by the test's _main function_, such
+that would be compared in application of a _test predicate_.
+
+For purposes of _test definition_, _test application_, and  _test
+reporting_  a _test_ may be defined as effectively contained within a
+_test suite_.
 
 #### Test Protocol - Concepts - Outline
 
 * **Test Classes** (Baseline test protocol - AFFTA)
     * `Test` - the primary protocol class of this system
     * `Lisp-Test` - a protocol class for tests onto Lisp forms
-      effectively redundant to `LISP-TEST`
     * _Blue sky: Additional test classes may be defined for testing of
       systems outside of the Common Lisp programming environment_
 
@@ -141,6 +201,12 @@ _test application_ and for _test reporting_ -- within a _test suite_.
 
 * **Test Recording** (Baseline test protocol - AFFTA)
     *_Reference to subsequent sections of the documentation_
+
+* **Test Reporting**
+    * _API TBD_
+    * To Do: Locate/Extend/Define an XML syntax for recording of _test
+      definitions_, _test goal_ sets, and _test result_ sets, in a
+      syntax agnostic to any single software patform
 
 ### Test Protocol Dictionary
 
@@ -481,6 +547,8 @@ In [AFFTA][affta] a _test record_  will contain the following features:
 [test-protocol]: src/main/cltl/test-protocol.lisp
 [test-protocol]: src/main/cltl/test-recording.lisp
 [dobelle-app]: https://github.com/MetaCommunity/dobelle-app
+[ASDF]: http://common-lisp.net/project/asdf/
+[mvn]: http://maven.apache.org/
 
 <!--  LocalWords:  AFFTA TBD API mci cltl utils dobelle FIXME EPL AWS
  -->
