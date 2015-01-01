@@ -10,6 +10,9 @@
 (defgeneric test-object (test))
 (defgeneric (setf test-object) (new-value test))
 
+(defgeneric test-predicate (test))
+(defgeneric (setf test-predicate) (new-value test))
+
 (defgeneric test-summary (test))
 (defgeneric (setf test-summary) (new-value test))
 
@@ -90,6 +93,10 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   ((object
     :initarg :object
     :accessor test-object)
+   (predicate
+    :initarg :predicate
+    :type function
+    :accessor test-predicate)
    (summary
     :initarg :summary
     :initform nil

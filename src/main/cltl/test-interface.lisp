@@ -255,10 +255,11 @@ See also:
   (with-properties (properties)
     (let* ((lp (find-property :lambda %unspecified%))
            (ob (find-property :object)) ;; will be evaluted
-           (c (find-property :class %unspecified%)))
+           (c (find-property :class %unspecified%))
+           (pred (find-property :predicate %unspecified%)))
       (when (eq lp %unspecified%)
         (error "DEFTEST ~S absent of :LAMBDA property" name))
-      (with-gensym (%suite class test object)
+      (with-gensym (%suite class test object predicate)
         `(let* ((,%suite ,(if suitep 
                                `(find-test-suite (quote ,suite) t)
                                `(values *test-suite*)))
@@ -266,10 +267,14 @@ See also:
                              `(test-suite-default-test-class ,%suite)
                              `(find-class ,c t ,env)))
                 (,object ,(values ob))
+                (,predicate ,(if (eq pred %unspecified%)
+                                 `(function eql)
+                                 `(values ,pred)))
                   ;; FIXME: :LAMBDA only applicable for LISP-TEST
                 (,test (make-instance ,class
                                       :name (quote ,name)
                                       :object ,object
+                                      :predicate ,predicate
                                       :lambda (lambda ,@lp)
                                       ,@(map-properties))))
            (add-test ,test ,%suite)

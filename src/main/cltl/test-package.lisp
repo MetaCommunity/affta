@@ -36,6 +36,7 @@
      ;; test-classes.lisp
      #:test-predicate
      #:test-object
+     #:test-predicate
      #:test-setup-function
      #:test-cleanup-function
 
@@ -56,7 +57,6 @@
      #:find-test
      #:remove-test
      #:map-tests
-     
      
      ;; test-protocol.lisp
      #:defsuite
