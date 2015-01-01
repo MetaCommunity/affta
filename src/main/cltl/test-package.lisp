@@ -73,8 +73,10 @@
      #:do-test-cleanup
      #:do-test
 
+     #:test-reference
+     #:test-reference-test
+
      ;; test-recording.lisp
-     #:test-utility-test
      #:test-parameters
      #:test-expect-state
      #:test-predicate
@@ -83,7 +85,6 @@
      #:test-setup-values
      #:test-cleanup-values
 
-     #:test-utility
      #:test-goal
      #:lisp-test-goal
      #:compute-test-goal-class

@@ -13,6 +13,9 @@
 (defun every= (a b)
   (every #'= a b))
 
+;; (every= '(1.0 2.0) '(1 2.0d0))
+;; -=> T
+
 (defun every-eql (a b)
   (every #'eql a b))
 

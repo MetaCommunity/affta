@@ -25,11 +25,10 @@
       (when cleanup-p
         (funcall fn goal test)))))
 
-
 (defgeneric do-test  (goal test)
   (:method ((goal lisp-test-goal) (test lisp-test))
     (apply (test-lambda-function test)
-           (test-parameters goal)))
+           (funcall (the function (test-parameters-function goal)))))
 
   (:method ((goal list) (test function))
     "initialize a TEST-GOAL and a TEST for the FUNCTION and
@@ -78,31 +77,39 @@ Example:
    (sqrt (+ (expt a 2) (expt b 2))))
 
  (do-test '((3 4) (5) every=) #'geom-sum)
- => #<TEST-RECORD TEST-SUCCEEDED [FUNCTIONAL-TEST] GEOM-SUM (3 4) =?=> (5) (EVERY=) (5.0)>
-"
-    (destructuring-bind (params expect 
+ => #<TEST-RECORD TEST-SUCCEEDED GEOM-SUM (3 4) =[EVERY=]=> (5) | (5.0)>, #<TEST-SUCCEEDED {1008EF50E3}>"
+    ;; FIXME ^ Include that example in the regression tests
+    (destructuring-bind (params expect
                                 &optional 
-                                (predicate
-                                 %default-equivalence-function%))
+                                (predicate %default-equivalence-function%))
         goal
-      (let* ((g (make-instance 'lisp-test-goal
-                              :parameters params
-                              :expect  expect
-                              :predicate predicate))
-             (p-list (mapcar #'(lambda (form)
+      (declare (type function-designator predicate))
+      (let* ((params-list (mapcar #'(lambda (form)
                                  (declare (ignore form))
                                  (gensym "parameter-"))
                              params))
              (test (make-instance 'lisp-test
                                   :object test
+                                  :predicate (coerce predicate 'function)
                                   :lambda
-                                  `(lambda (,@p-list)
-                                     (funcall ,test ,@p-list)))))
+                                  `(lambda (,@params-list)
+                                     (funcall ,test ,@params-list))))
+             (g (make-instance 'lisp-test-goal
+                               :test test
+                               :params params
+                               :params-function (coerce `(lambda ()
+                                                           (list ,@params))
+                                                        'function)
+                               :expect  expect
+                               :expect-function (coerce `(lambda ()
+                                                           (list ,@expect))
+                                                        'function))))
         (do-test g test)))))
 
 
 (defmethod  do-test :around ((goal lisp-test-goal) test)
-  (macrolet ((record-at-phase (phase test goal record)
+  ;; FIXME: Add more handling for errors, BREAK, CERROR, etc
+  (macrolet ((recorded-run (phase test goal record)
                (let ((app (intern (format* "~A-~A"
                                            (quote #:do-test)
                                            phase)))
@@ -118,7 +125,7 @@ Example:
                     (unwind-protect
                          (setq ,results
                                (with-flagged-eval ,%record
-                                 (multiple-value-list
+                                 (multiple-value-list 
                                   (,app ,%goal ,%test))))
                       (setf (,rec ,%record) ,results))))))
 
@@ -136,7 +143,8 @@ Example:
                       (condition (,c) (process-c ,c signal ,record)))))))
 
     (let ((record (ensure-test-record goal test)))
-      (record-at-phase #:setup test goal record)
+      ;; FIXME: Note test setup function return values stored in RECORD
+      (recorded-run #:setup test goal record)
       (let ((results
              (unwind-protect
                   (with-flagged-eval record
@@ -148,21 +156,25 @@ Example:
                ;; Note also that the TEST-CLEANUP-VALUES property will
                ;; be set onto the RECORD object, before the
                ;; TEST-RESULTS property is set 
-               (record-at-phase #:cleanup test goal record)))
-            (expect (test-expect-state goal))
-            (pred (test-predicate goal)))
+               
+               ;; FIXME: Note test cleanup function return values stored in RECORD
+               (recorded-run #:cleanup test goal record)))
+            (expect (funcall (the function (test-expect-state-function goal))))
+            (pred (test-predicate test)))
 
         (setf (test-main-values record) results)
         
         (let ((state (make-instance 
                       (cond
-                        ((funcall pred results expect) 
+                        ;; FIXME: Document the syntax and order of arguments 
+                        ;; to the test-predicate function
+                        ((funcall (the function pred) results expect)
                          (quote test-succeeded))
                         (t (quote test-failed)))
                       :test test
                       :record record)))
           (setf (test-condition record) state)
           (signal state)
-          (values record))))))
+          (values record state))))))
 
 

@@ -239,10 +239,8 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 
 (defmethod print-label ((test lisp-test) (stream stream))
-  (format stream "~A ~<~<[~A]~> ~<[~A]~>~>" 
-          (class-name (class-of test))
-          (slot-value* test 'object %unbound-slot-label%)
-          (slot-value* test 'lambda-function)))
+  (print-label (slot-value* test 'object %unbound-slot-label%)
+               stream))
 
 
 ;;; % Test Goals Container - Protocol Class
@@ -294,6 +292,8 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 
 (defgeneric find-goal (name container &optional errorp)
+  (:method (name (container symbol) &optional (errorp t))
+    (find-goal name (find-test-suite container) errorp))
   (:method ((name symbol) (container test-goal-container) 
             &optional (errorp t))
     (find-object name  (container-goals-index container) errorp)))
@@ -307,6 +307,11 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   (:method (function (container test-goal-container))
     (map-objects function (container-goals-index container))))
 
+
+(defgeneric run-tests (container)
+  (:method ((container test-goal-container))
+    (map-goals #'run-tests container)))
+  
 
 (defgeneric compute-goal-class (test container &rest initargs
                                 &key &allow-other-keys)
@@ -526,6 +531,9 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   ;; function_.
   ())
 
+(defmethod run-tests ((container test-goal))
+  (do-test container (test-reference-test container)))
+
 (defgeneric test-parameters (instance))
 (defgeneric (setf test-parameters) (new-value instance))
 
@@ -555,10 +563,12 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
    ))
 
 (defmethod print-label ((goal lisp-test-goal) (stream stream))
-  (format stream "~<~A =?=> ~A~> ~<(~A)~>"
-          (test-parameters goal)
-          (test-expect-state goal)
-          (function-name (test-predicate goal))))
+  (format stream "~<~A =[~A]=> ~A~>"
+          (ignore-errors (test-parameters goal))
+          (ignore-errors 
+            (function-name (test-predicate
+                            (test-reference-test goal))))
+          (ignore-errors (test-expect-state goal))))
 
 #+TO-DO
 (defclass application-test-goal (test-goal)

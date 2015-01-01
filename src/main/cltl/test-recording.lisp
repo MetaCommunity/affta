@@ -3,8 +3,6 @@
 
 (in-package #:mcicl.test)
 
-(defgeneric test-utility-test (test))
-
 (defgeneric test-parameters (test))
 
 (defgeneric test-expect-state (test))
@@ -34,7 +32,7 @@
 
 ;;; % Test Recording
 
-(defclass test-record (test-utility)
+(defclass test-record (test-reference)
   ;; NOTE: TEST-RECORD was defined primarily for application in
   ;; functional testing. Proceeding to definition of additional
   ;; testing applications, TEST-RECORD may be revised.

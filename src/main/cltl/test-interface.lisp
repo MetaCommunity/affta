@@ -20,7 +20,7 @@
   (register-object  (deftest frob-1 (frob) (:lambda () (break "FROB")))
                     suite)
   (map-tests #'(lambda (test) (setq tests (push test tests))) suite)
-  (values (length tests) (and tests (object-name (car tests))))
+  (values (length tests) (and tess (object-name (car tests))))
   )
 ;; => 1, FROB-1 ;; OK
 
@@ -42,6 +42,7 @@
 
   (defsuite geometry-test-suite-1
       (:class test-suite))
+            
 
  (macroexpand-1 (quote
   (deftest radians-to-degrees-1 (geometry-test-suite-1)
@@ -51,9 +52,12 @@
     ;; (:cleanup-lamba ()) ;; no-op    
     (:lambda (theta)
       (radians-to-degrees theta))
-    (:predicate #'=)
+    (:predicate #'(lambda (a b) (every= a b)))
     )
  ))
+
+
+  (describe (find-test 'radians-to-degrees-1 'geometry-test-suite-1))
 
   (in-test-suite geometry-test-suite-1) ;; X
 
@@ -69,12 +73,17 @@
            (:expect (values (coerce -180 (type-of pi))))))
 
   (map-goals #'print (find-goal 'radians-to-degrees-1.1
-                                (find-test-suite 'geometry-test-suite-1)))
+                                'geometry-test-suite-1))
 
-  (run-test 'pluspi-180 geometry-test-suite-1)
-  (run-test 'minuspi-minus180 geometry-test-suite-1)
+  (let ((g (find-goal 'pluspi-180 (find-goal 'radians-to-degrees-1.1 
+                                             'geometry-test-suite-1))))
+    (describe g)
+    (funcall (test-parameters-function g )))
 
-  (run-test-suite geometry-test-suite-1)
+  (run-test '(geometry-test-suite-1 pluspi-180))
+  (run-test '(geometry-test-suite-1 minuspi-minus180 )
+
+  (run-test-suite 'geometry-test-suite-1)
 
 
   ;; second prototype:
@@ -99,11 +108,11 @@
     (:summary "Test evaluation of COMPUTE-CLASS")
     (:lambda (ident)
       (values (compute-class ident) ident))
-    (:predicate #'eq))
+    (:predicate #'every-eq))
 
   (find-test 'compute-class-1 'utils-test-suite-1)
 
-  (defgoals simple-goals-1 (compute-class-1  )
+  (defgoals simple-goals-1 (compute-class-1 utils-test-suite-1)
     (:summary "Test evaluation of COMPUTE-CLASS")
     (:goal symbol-to-class
            (:class lisp-test-goal)
@@ -117,12 +126,12 @@
            (:expect (let ((c (find-class 'ratio)))
                       (values c c)))))
   
-  (run-test compute-class-1) ;; use current-suite
+  (run-test 'compute-class-1) ;; use current-suite (?)
 
-  (run-test-suite  utils-test-suite-1)
+  (run-test-suite  'utils-test-suite-1)
 
   )
-
+  )
 
 
 ;; Protocol for source-inline instance tests [AFFTA 1.3+]
@@ -462,11 +471,18 @@ FIXME: Update documentation string:
                        ;; 4. does not define an :EXPECT-FUNCTION for
                      ;;    evaluating :EXPECT initarg
                      (let* ((expect (nget-property* :expect args))
-                            (expect-fn `(lambda () ,@expect))
+                            (expect-fn `(lambda () (list ,@expect)))
                             (params (nget-property* :params args))
-                            (params-fn `(lambda () ,@params))
-                            (class (nget-property :class args
-                                                  `(compute-goal-class ,%test ,goal-set))))
+                            (params-fn `(lambda () (list ,@params)))
+                            (class (nget-property :class args %unspecified%)))
+
+                       (cond
+                         ((eq class %unspecified%)
+                          (setq class 
+                                `(compute-goal-class ,%test ,goal-set)))
+                         ((symbolp class) (setq class `(quote,class))))
+                         
+                       
                        (setq forms-cache
                              (append forms-cache
                                      `((ensure-goal (quote ,name) ,goal-set
@@ -474,15 +490,25 @@ FIXME: Update documentation string:
                                                     :expect-function ,expect-fn
                                                     :params (quote ,params)
                                                     :params-function ,params-fn
-                                                    :class ,class
+                                                    :class (compute-class ,class)
                                                     ,@(map-properties args)))))))))))
                 
          (let ((,goal-set (ensure-goal-set (quote ,name) ,%suite
                                            :test ,%test
-                                           :class (compute-class ,class)
+                                           :class (compute-class  ,class)
                                            ,@(map-properties properties))))
 
            
            ,@forms-cache
            
            )))))
+
+
+(defun run-test-suite (suite &rest recording-params)
+  (declare (type (or symbol test-suite) suite)
+           (ignore recording-params))
+  ;; FIXME: pass the RECORDING-PARAMS through to RUN-TESTS
+  (let ((%suite (etypecase suite
+                  (symbol (find-test-suite suite))
+                  (test-suite suite))))
+    (run-tests %suite)))
