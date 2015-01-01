@@ -263,7 +263,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
        :initarg :default-goal-set-class
      :initform (find-class 'goal-set)
      :type class-designator
-     :accessor default-goal-set-class)
+     :accessor default-goal-set-class))
   (:metaclass simple-associative-class)
   (:key-slot . mcicl.utils::name)
   (:default-initargs :key-function #'object-name))
