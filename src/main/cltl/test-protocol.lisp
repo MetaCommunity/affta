@@ -17,7 +17,7 @@
 (defgeneric do-test-cleanup (goal test)
   (:method (goal (test function))
     (declare (ignore goal test))
-    (values nil))
+    (values))
 
   (:method (goal (test test))
     (multiple-value-bind (fn cleanup-p)
