@@ -179,6 +179,7 @@ _test suite_.
     * An extension may define additional _properties_ to a _test
       goal_. For example, a _test goal_ for a _shell application test_
       may provide _properties_ such as:
+      
           * Configurable _parameters_ for the _shell execution
             environment_ of the _test_
           * A reference to a specific _filesystem directory_ to apply
@@ -202,7 +203,7 @@ _test suite_.
         * Application of _predicate_ to _expected return values_
 
 * **Test Recording** (Baseline test protocol - AFFTA)
-    *_Reference to subsequent sections of the documentation_
+    * _Reference to subsequent sections of the documentation_
 
 * **Test Reporting**
     * _API TBD_
@@ -211,6 +212,8 @@ _test suite_.
       syntax agnostic to any single software patform
 
 ### Test Protocol Dictionary
+
+#### Test Definitions Dictionary
 
 * `test` [Standard Class]
 
@@ -225,6 +228,8 @@ _test suite_.
     
 * `test-lambda-form`, `test-lambda-function` [Accessor]
 
+#### Test Goals Dictionary
+
 * `test-goal` [Standard Class]
     * Summary: Effectively, a test goal `B` encapsulates a test `A`,
       also storing a set of structural qualities for application of `A`
@@ -234,26 +239,41 @@ _test suite_.
       a Lisp session, or externally in a host operating system
       process)
     * See also: `test`, `test-record`
-    
+
 * `lisp-test-goal` [Standard Class]  ;; FIXME: Reevaluate how this extends `test-goal`
+
 * `test-parameters` [Accessor]
+
 * `test-expect-state` [Accessor]
+
 * `test-predicate` [Accessor]
 
-* `do-test-setup` [Generic Function]
-* `do-test-cleanup` [Generic Function]
-* `do-test` [Generic Function] ;; FIXME: Reevaluate for alignment to RUN-TEST
+#### Test Application Dictionary
 
+* `do-test-setup` [Generic Function]
+
+* `do-test-cleanup` [Generic Function]
+
+* `do-test` [Generic Function] ;; FIXME: Reevaluate for alignment to RUN-TEST
 
 ### Test Recording Concepts
 
 In [AFFTA][affta] a _test record_  will contain the following features:
 
-* _Goal_ provided for _test_
-* _Condition_ on completion of _test_
-* _Values_ returned by _test setup function_, if any
-* _Values_ returned by _test main function_
-* _Values_ returned by _test cleanup function_, if any
+* Reference to _goal object_ provided for _test_
+* Reference to _condition object_, as would be initialized either in
+  an _error_ resulting in non-local exit of control from within a test
+  _main_ function, or created on succesful _completion_ of _test_
+  `;;; FIXME:` If there is an _error_ resulting in non-local exit of
+  control from the _setup_ or _cleanup_ function, the condition object
+  created from that _error_ should be stored seperately in the _test
+  record_. `;;; TO DO:` Note that not every _not-local exit of control_
+  will result in initialization of an _error_ object -- e.g. `break`
+* References to _values_ returned by the _test setup function_, if any
+  _test setup function_ is defined
+* References to_values_ returned by _test main function_
+* Referenes to _values_ returned by _test cleanup function_, if any
+  _test cleanup function_ is defined.
 
 ### Test Recording Dictionary
 
@@ -271,7 +291,6 @@ In [AFFTA][affta] a _test record_  will contain the following features:
 * `test-failed` [Condition Class]
 * `test-succeeded` [Condition Class]
 *  See also: `utils:format-condition` [Generic Function]
-
 
 ### Test Reporting Concepts
 
