@@ -30,8 +30,6 @@
 
 (defgeneric test-cleanup-values (test))
 
-(defgeneric format-goal-shorthand (goal stream))
-
 
 (defclass test-utility () ;; Mixin - TEST container
   ((test
@@ -69,7 +67,7 @@
     :accessor test-predicate)
    ))
 
-(defmethod format-goal-shorthand ((goal lisp-test-goal) (stream stream))
+(defmethod print-label ((goal lisp-test-goal) (stream stream))
   (format stream "~<~A =?=> ~A~> (~A)"
           (test-parameters goal)
           (test-expect-state goal)

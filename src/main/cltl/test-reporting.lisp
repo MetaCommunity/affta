@@ -30,8 +30,7 @@
 
 (defmethod format-test-results ((condition test-result) (stream stream))
   (let ((record (test-result-record condition)))
-    (format-goal-shorthand (test-goal record)
-                           stream)
+    (print-label (test-goal record) stream)
     (write-char #\Space stream)
     (princ (test-main-values record)
            stream)))

@@ -84,6 +84,5 @@
      #:test-record
      #:ensure-test-record
 
-     #:format-goal-shorthand
      ))
 
