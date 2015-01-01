@@ -85,7 +85,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 ;;;; Test
 
-(defclass test (associative-object pretty-printable-object)
+(defclass test (associative-object)
   ;; FIXME: add slot SUITE (?)
   ((object
     :initarg :object
@@ -239,9 +239,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (defgeneric test-suite-default-test-class (suite))
 (defgeneric (setf test-suite-default-test-class) (new-value suite))
 
-(defclass test-suite (simple-associative-index 
-                      associative-object
-                      pretty-printable-object)
+(defclass test-suite (simple-associative-index associative-object)
   ((%tests
     :reader %test-suite-tests
     :initform (make-hash-table :test #'eq))
@@ -264,27 +262,6 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   (:default-initargs :key-function #'object-name))
 
 
-
-(defmethod shared-initialize :around ((instance test-suite)
-                                      slot-names &rest initargs
-                                      &key 
-                                        (print-name nil pnp)
-                                        (print-label nil plp)
-                                        (name nil namep))
-  (declare (ignore print-name print-label))
-  (let (args-changedp)
-    (when namep
-      (unless (or pnp (slot-boundp instance 'mcicl.utils::print-name))
-        (setf args-changedp t
-              (getf initargs :print-name)
-              (symbol-name name)))
-      (unless (or plp (slot-boundp instance 'mcicl.utils::print-label))
-        (setf args-changedp t
-              (getf initargs :print-label)
-              (symbol-name name))))
-    (cond
-      (args-changedp (apply #'call-next-method instance slot-names initargs))
-      (t (call-next-method)))))
 
 (defmethod print-label ((object test-suite) (stream stream))
   (let ((name (ignore-errors (object-name object)))
