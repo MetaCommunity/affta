@@ -18,6 +18,7 @@
      #:info.metacommunity.cltl.utils
      #:info.metacommunity.cltl.utils.mop
      ;; #+CLOSER-MOP #:c2mop 
+     #:bordeaux-threads
      #:cl
      )
 

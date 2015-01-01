@@ -13,6 +13,7 @@
   :depends-on (#:info.metacommunity.cltl.utils
                #+NIL #:info.metacommunity.cltl.app
                #:info.metacommunity.cltl.utils.mop
+               #:bordeaux-threads
                )
 
   :components 
