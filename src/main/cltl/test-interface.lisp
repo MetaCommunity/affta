@@ -15,7 +15,8 @@
 
   (defsuite geometry-test-suite-1
       (:class test-suite))
-  
+
+ (macroexpand-1 (quote
   (deftest radians-to-degrees-1 (geometry-test-suite-1)
     (:object #'radians-to-degrees)
     (:summary "Ensure...")
@@ -23,10 +24,11 @@
     ;; (:cleanup-lamba ()) ;; no-op    
     (:lambda (theta)
       (radians-to-degrees theta)))
+ ))
 
   (in-test-suite geometry-test-suite-1) ;; X
 
-  (defgoals radians-to-degrees-1 (...)
+  (defgoals radians-to-degrees-1.1 (radians-to-degrees-1)
       (:documentation "Ensure...")
     ("Pi Radians => 180 Degrees"
      (:params-form pi)
@@ -54,23 +56,29 @@
       ;; support a syntax similar to ASDF:DEFSYSTEM
       (:class test-suite)
     (:default-test-class lisp-test)
-    (:depends-on #:info.metacommunity.cltl.utils) ;;;; ?
+    ;; N/A handle system dependencies in system definition :
+    #+NIL (:depends-on #:info.metacommunity.cltl.utils)
    )
-  
+ 
+   (find-test-suite 'utils-test-suite-1)  
+
   (in-test-suite utils-test-suite-1) ;; X
 
-  (deftest compute-class-1 (ident)
-    ;; DEFTEST-LIKE-DEFUN - Obosolete prototype
-    ;; See also: measure-test.lisp in the igneous-math system
-    "Ensure..."
-    (compute-class ident))
-  
+ (deftest compute-class-1 (utils-test-suite-1)
+    (:object #'compute-class)
+    (:summary "Ensure...")
+    (:lambda (ident)
+      (compute-class ident)))
+
+  (find-test 'compute-class-1 'utils-test-suite-1)
+
+
   (defgoals simple-goals-1 (compute-class-1  )
       (:documentation "Ensure...")
-    ("Symbol => Class" 
+    (:goal "Symbol => Class" 
      (:params-form 'string)
      (:expect-form (values (find-class 'string))))
-    ("Class => Class" 
+    (:goal "Class => Class" 
      (:params-form (find-class 'ratio))
      (:expect-form (values (find-class 'ratio)))))
   
@@ -137,7 +145,7 @@ a definition form of a syntax similar to to DEFCLASS."
                       (t (values default nil)))))
                 (map-properties ()
                   (mapcan (lambda (spec)
-                            (destructuring-bind (name . value) spec
+                            (let ((name (car spec)))
                               (list name (format-property spec))))
                           ,p)))
          ,@body))))
@@ -219,11 +227,10 @@ See also:
   (with-properties (properties)
     (let* ((lp (find-property :lambda %unspecified%))
            (ob (find-property :object)) ;; will be evaluted
-           (n (find-property :name %unspecified%))
            (c (find-property :class %unspecified%)))
       (when (eq lp %unspecified%)
         (error "DEFTEST ~S absent of :LAMBDA property" name))
-      (with-gensym (%suite class test object %name)
+      (with-gensym (%suite class test object)
         `(let* ((,%suite ,(if suitep 
                                `(find-test-suite (quote ,suite) t)
                                `(values *test-suite*)))
@@ -231,12 +238,9 @@ See also:
                              `(test-suite-default-test-class ,%suite)
                              `(find-class ,c t ,env)))
                 (,object ,(values ob))
-                (,%name ,(if (eq n %unspecified%)
-                             `(gentemp "UNSPECIFIED-")
-                             `(quote ,n)))
                   ;; FIXME: :LAMBDA only applicable for LISP-TEST
                 (,test (make-instance ,class
-                                      :name ,%name
+                                      :name (quote ,name)
                                       :object ,object
                                       :lambda (lambda ,@lp)
                                       ,@(map-properties))))
