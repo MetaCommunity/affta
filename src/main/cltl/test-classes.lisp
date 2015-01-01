@@ -88,7 +88,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 ;;;; Test
 
-(defclass test (associative-object)
+(defclass test (definition associative-object)
   ;; FIXME: add slot SUITE (?)
   ((object
     :initarg :object
@@ -97,11 +97,6 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
     :initarg :predicate
     :type function
     :accessor test-predicate)
-   (summary
-    :initarg :summary
-    :initform nil
-    :accessor test-summary
-    :type (or string null))
    ;; NOTE: The following slots are defined with non-conventional
    ;; accessors, below.
    (setup-function
@@ -117,6 +112,10 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
     :initarg :cleanup-function
     :accessor %test-cleanup-function)
    ))
+
+#+NIL ;; regression test - test initialization
+(make-instance  'test)
+
 
 (define-condition test-not-found (container-condition entity-not-found)
   ()
@@ -225,10 +224,11 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
                                      &key &allow-other-keys)
   (declare (ignore initargs))
   (when-slot-init (instance lambda-function slot-names)
-                  (setf (test-lambda-function instance)
-                        (compile nil (test-lambda-form instance)))))
+    (when (slot-boundp instance 'lambda-form)
+      (setf (test-lambda-function instance)
+            (compile nil (test-lambda-form instance))))))
 
-#+NIL
+#+NIL ;; regression test - lisp-test initialization
 (let ((inst 
        (make-instance 
         'lisp-test 
@@ -246,16 +246,16 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 (defgeneric %test-suite-tests (suite))
 
-(defgeneric test-suite-default-test-class (suite))
-(defgeneric (setf test-suite-default-test-class) (new-value suite))
+(defgeneric default-test-class (container))
+(defgeneric (setf default-test-class) (new-value container))
 
-(defclass test-suite (simple-associative-index associative-object)
+(defclass test-suite (definition simple-associative-index associative-object)
   ((default-test-class
        :initarg :default-test-class
      :initform (find-class 'lisp-test)
      :type class-designator 
-     :accessor test-suite-default-test-class))
-  (:metaclass associative-class)
+     :accessor default-test-class))
+  (:metaclass simple-associative-class)
   (:key-slot . mcicl.utils::name)
   (:default-initargs :key-function #'object-name))
 
