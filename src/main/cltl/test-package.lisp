@@ -14,7 +14,7 @@
      )
 
     (:use
-     #+NIL #:info.metacommunity.cltl.application ;; cf. LABELED-OBJECT, #'NOTIFY
+     #+NIL #:info.metacommunity.cltl.app ;; cf. LABELED-OBJECT, #'NOTIFY
      #:info.metacommunity.cltl.utils
      #:info.metacommunity.cltl.utils.mop
      ;; #+CLOSER-MOP #:c2mop 
