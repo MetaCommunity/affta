@@ -49,9 +49,14 @@
      #:test-suite-default-test-class
      #:register-test-suite
      #:find-test-suite
-     #:remove-test-suite     #:map-tests
+     #:remove-test-suite
+     #:map-test-suites
+
      #:add-test
+     #:find-test
      #:remove-test
+     #:map-tests
+     
      
      ;; test-protocol.lisp
      #:defsuite
@@ -81,6 +86,8 @@
      #:test-utility
      #:test-goal
      #:lisp-test-goal
+     #:compute-test-goal-class
+
      #:test-record
      #:ensure-test-record
 
