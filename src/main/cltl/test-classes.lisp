@@ -243,7 +243,8 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
       (slot-value* test 'object)
     (format stream "~A [~A]" 
             (class-name (class-of test))
-            (when boundp (function-name fn)))))
+            (when (and boundp fn)
+              (function-name fn)))))
 
 
 (defgeneric %test-suite-tests (suite))
