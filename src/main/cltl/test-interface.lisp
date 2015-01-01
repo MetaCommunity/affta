@@ -2,6 +2,31 @@
 
 (in-package #:mcicl.test)
 
+#+NIL ;; Regression test onto ASSOCIATIVE-INDEX
+(progn
+
+(defsuite frob)
+
+;; test integration with instance indexing protocol
+(compute-key (deftest frob-1 (frob) (:lambda () (break "FROB")))
+             (find-test-suite 'frob))
+;; => FROB-1 ;; OK
+
+;; test registry for test object in test suite
+(let ((suite (find-test-suite 'frob))
+      (tests))
+  (register-object  (deftest frob-1 (frob) (:lambda () (break "FROB")))
+                    suite)
+  (map-tests #'(lambda (test) (setq tests (push test tests))) suite)
+  (values (length tests) (and tests (object-name (car tests))))
+  )
+;; => 1, FROB-1 ;; OK
+
+(hash-table-count (object-table (find-test-suite 'frob)))
+;; => 1
+
+
+)
 
 #+PROTOTYPE ;; from AFFTA-1.2 [Batch Testing] (?) ;; see README.md
 (progn
@@ -19,7 +44,7 @@
  (macroexpand-1 (quote
   (deftest radians-to-degrees-1 (geometry-test-suite-1)
     (:object #'radians-to-degrees)
-    (:summary "Ensure...")
+    (:summary "Very conversion radians => degrees")
     ;; (:setup-lamba ()) ;; no-op
     ;; (:cleanup-lamba ()) ;; no-op    
     (:lambda (theta)
@@ -29,7 +54,7 @@
   (in-test-suite geometry-test-suite-1) ;; X
 
   (defgoals radians-to-degrees-1.1 (radians-to-degrees-1)
-      (:documentation "Ensure...")
+    (:summary "Verify conversion onto factors of PI")
     ("Pi Radians => 180 Degrees"
      (:params-form pi)
      (:expect-form (values (coerce 180 (type-of pi))))

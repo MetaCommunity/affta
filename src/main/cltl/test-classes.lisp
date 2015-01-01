@@ -173,13 +173,11 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (declaim (type string %unbound-slot-label%))
 
 (defmethod print-label ((test test) (stream stream))
-  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (format stream "[~A] ~A" 
           (class-name (class-of test))
           (slot-value* test 'object %unbound-slot-label%)))
 
 (defmethod print-object ((test test) stream)
-  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (print-unreadable-object (test stream :type t :identity t)
     (print-label test stream)))
 
@@ -233,7 +231,6 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 
 (defmethod print-label ((test lisp-test) (stream stream))
-  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (multiple-value-bind (fn boundp)
       (slot-value* test 'object)
     (format stream "~A [~A]" 
@@ -243,25 +240,12 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 
 (defgeneric %test-suite-tests (suite))
-(defgeneric %test-suite-test-lock (suite))
 
 (defgeneric test-suite-default-test-class (suite))
 (defgeneric (setf test-suite-default-test-class) (new-value suite))
 
 (defclass test-suite (simple-associative-index associative-object)
-  ((%tests
-    :reader %test-suite-tests
-    :initform (make-hash-table :test #'eq))
-   (%tests-lock
-    ;; NB: The TEST-SUITE registry functions will use a lock contained
-    ;; in the the class TEST-SUITE, when accessing the global, top
-    ;; level registry for test suites.
-    ;;
-    ;; This slot provides a lock for test registry within any single
-    ;; test suite.
-    :reader %test-suite-test-lock
-    :initform (make-lock "%tests-lock"))
-   (default-test-class
+  ((default-test-class
        :initarg :default-test-class
      :initform (find-class 'lisp-test)
      :type class-designator 
@@ -283,7 +267,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 (defmethod print-label ((object test-suite) (stream stream))
   (let ((name (ignore-errors (object-name object)))
-        (%tests (ignore-errors (%test-suite-tests object))))
+        (%tests (ignore-errors (object-table object))))
     (format stream "~A (~A tests)" name 
             (when %tests
               (hash-table-count %tests)))))
@@ -319,28 +303,24 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 (defgeneric add-test (test suite)
   (:method ((test test) (suite test-suite))
-    (with-lock-held ((%test-suite-test-lock suite)) 
-      (register-object test suite))))
+    (register-object test suite)))
 
 (defgeneric remove-test (test suite)
   (:method ((test test) (suite test-suite))
-    (with-lock-held ((%test-suite-test-lock suite)) 
-      (remove-object test suite))))
+    (remove-object test suite)))
 
 (defgeneric find-test (name suite &optional errorp)
   (:method (name (suite symbol) &optional (errorp t))
     (let ((suite (find-test-suite suite)))
       (find-test name suite errorp)))
   (:method ((name symbol) (suite test-suite) &optional (errorp t))
-    (with-lock-held ((%test-suite-test-lock suite))
-      (let ((test (find-object name suite nil)))
-        (cond
-          (test (values test))
+    (let ((test (find-object name suite nil)))
+      (cond
+        (test (values test))
           (errorp (error 'test-not-found
                          :name name :container suite))
-          (t (values nil)))))))
+          (t (values nil))))))
 
 (defgeneric map-tests (function suite)
   (:method (function (suite test-suite))
-    (with-lock-held ((%test-suite-test-lock suite)) 
-      (map-objects function suite))))
+    (map-objects function suite)))
