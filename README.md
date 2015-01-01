@@ -180,8 +180,8 @@ _test suite_.
       goal_. For example, a _test goal_ for a _shell application test_
       may provide _properties_ such as:
       
-          * Configurable _parameters_ for the _shell execution
-            environment_ of the _test_
+          * Configurable _parameters_ for defininig the _shell
+            execution environment_ of the _test_
           * A reference to a specific _filesystem directory_ to apply
             as the _root directory_ of the _test_
           * _Network addresses_ to be applied in the test -- as when
@@ -228,16 +228,10 @@ _test suite_.
     
 * `test-lambda-form`, `test-lambda-function` [Accessor]
 
+
 #### Test Goals Dictionary
 
 * `test-goal` [Standard Class]
-    * Summary: Effectively, a test goal `B` encapsulates a test `A`,
-      also storing a set of structural qualities for application of `A`
-      within a _testing session_. The structural qualities stored in a
-      _test goal_, `B` may provide features for the environment in
-      which the _test form_ of `A` is to be evaluated (e.g directly in
-      a Lisp session, or externally in a host operating system
-      process)
     * See also: `test`, `test-record`
 
 * `lisp-test-goal` [Standard Class]  ;; FIXME: Reevaluate how this extends `test-goal`
