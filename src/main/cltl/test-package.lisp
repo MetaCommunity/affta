@@ -47,7 +47,6 @@
      #:test-lambda-function
 
      #:test-suite
-     #:default-test-class
      #:default-goal-set-class
      #:register-test-suite
      #:find-test-suite

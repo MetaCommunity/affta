@@ -31,58 +31,6 @@
 (defgeneric test-cleanup-values (test))
 
 
-(defclass test-utility () ;; Mixin - TEST container
-  ((test
-    :initarg :test
-    :accessor test-utility-test)))
-
-;; %% Goals for Test Definition
-
-(defclass test-goal (test-utility)
-  ;; effectively, a test goal encapsulates a set of parameters for a
-  ;; test's _primary test function_
-  ())
-
-(defclass lisp-test-goal (test-goal)
-  ((parameters
-    :initarg :parameters
-    :accessor test-parameters)
-   (expect-state
-    :initarg :expect
-    :accessor test-expect-state)
-   (predicate
-    ;; for application with a FUNCTIONAL-TEST, the TEST-PREDICATE of a
-    ;; LISP-TEST-GOAL must be a function accepting of two
-    ;; arguments: a list of "returned result" and a list of "expected
-    ;; result". The test-predicate function should return _true_ if
-    ;; the set of returned result is equivalent to the set of
-    ;; expected result, for within the closure of the test.
-    ;;
-    ;; of course, within a testing session, if a test's _primary
-    ;; method_ result in a non-local exit of control, then the test 
-    ;; result might not be captured for the test, and the test
-    ;; predicate might not be evaluated, but in that instance, the
-    ;; test-condition for the test record of the test should be set to
-    ;; the condition causing the non-local exit.
-    :initarg :predicate
-    :type function
-    :accessor test-predicate)
-   ))
-
-(defmethod print-label ((goal lisp-test-goal) (stream stream))
-  (format stream "~<~A =?=> ~A~> ~<(~A)~>"
-          (test-parameters goal)
-          (test-expect-state goal)
-          (function-name (test-predicate goal))))
-
-#+TO-DO
-(defclass application-test-goal (test-goal)
-  ...)
-
-#+TO-DO
-(defclass rootfs-test-goal (test-goal)
-  ...)
-
 
 ;;; % Test Recording
 
