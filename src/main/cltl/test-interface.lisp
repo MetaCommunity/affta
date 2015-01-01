@@ -44,34 +44,35 @@
  (macroexpand-1 (quote
   (deftest radians-to-degrees-1 (geometry-test-suite-1)
     (:object #'radians-to-degrees)
-    (:summary "Very conversion radians => degrees")
+    (:summary "Verify conversion of radians to degrees")
     ;; (:setup-lamba ()) ;; no-op
     ;; (:cleanup-lamba ()) ;; no-op    
     (:lambda (theta)
-      (radians-to-degrees theta)))
+      (radians-to-degrees theta))
+    (:predicate #'=)
+    )
  ))
 
   (in-test-suite geometry-test-suite-1) ;; X
 
   (defgoals radians-to-degrees-1.1 (radians-to-degrees-1)
     (:summary "Verify conversion onto factors of PI")
-    ("Pi Radians => 180 Degrees"
-     (:params-form pi)
-     (:expect-form (values (coerce 180 (type-of pi))))
-     (:predicate #'eq))
-    ("-Pi Radians => -180 Degrees"
-     (:params-form (- pi))
-     (:expect-form (values (coerce -180 (type-of pi))))
-     (:predicate #'eq))
-    )
+    (:goal pluspi-180
+           (:summary "Pi Radians => 180 Degrees")
+           (:params pi)
+           (:expect (values (coerce 180 (type-of pi)))))
+    (:goal minuspi-minus180
+           (:summary "-Pi Radians => -180 Degrees")
+           (:params (- pi))
+           (:expect (values (coerce -180 (type-of pi))))))
 
-  (run-test (quote |Radians => Degrees (180)|)
-            geometry-test-suite-1)
+  (run-test 'pluspi-180 geometry-test-suite-1)
+  (run-test 'minuspi-minus180 geometry-test-suite-1)
 
   (run-test-suite geometry-test-suite-1)
 
 
-  ;; furthermore, to do:
+  ;; second prototype:
 
   (defsuite utils-test-suite-1
       ;; TO DO: define TEST-SUITE as a sublcass of ASDF:SYSTEM
@@ -84,28 +85,30 @@
     ;; N/A handle system dependencies in system definition :
     #+NIL (:depends-on #:info.metacommunity.cltl.utils)
    )
- 
+
    (find-test-suite 'utils-test-suite-1)  
 
   (in-test-suite utils-test-suite-1) ;; X
 
  (deftest compute-class-1 (utils-test-suite-1)
     (:object #'compute-class)
-    (:summary "Ensure...")
+    (:summary "Test evaluation of COMPUTE-CLASS")
     (:lambda (ident)
-      (compute-class ident)))
+      (compute-class ident))
+    (:predicate #'eq))
 
   (find-test 'compute-class-1 'utils-test-suite-1)
 
-
   (defgoals simple-goals-1 (compute-class-1  )
-      (:documentation "Ensure...")
-    (:goal "Symbol => Class" 
-     (:params-form 'string)
-     (:expect-form (values (find-class 'string))))
-    (:goal "Class => Class" 
-     (:params-form (find-class 'ratio))
-     (:expect-form (values (find-class 'ratio)))))
+    (:summary "Test evaluation of COMPUTE-CLASS")
+    (:goal symbol-to-class
+           (:summary "Compute class for symbol class name" )
+           (:params 'string)
+           (:expect (values (find-class 'string))))
+    (:goal class-as-class
+           (:summary "Ensure identity operation for class arg")
+           (:params (find-class 'ratio))
+           (:expect (values (find-class 'ratio)))))
   
   (run-test compute-class-1) ;; use current-suite
 
