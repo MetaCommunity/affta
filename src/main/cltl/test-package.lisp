@@ -31,8 +31,6 @@
      #:test-result-record
      #:test-failed
      #:test-succeeded
-
-     #:format-test-label
      #:format-test-results
 
      ;; test-classes.lisp

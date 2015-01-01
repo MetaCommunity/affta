@@ -172,21 +172,16 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 (declaim (type string %unbound-slot-label%))
 
-(defmethod format-test-label ((test test) (stream stream))
+(defmethod print-label ((test test) (stream stream))
   ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (format stream "[~A] ~A" 
           (class-name (class-of test))
           (slot-value* test 'object %unbound-slot-label%)))
 
-(defmethod label ((object test))
-  ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
-  (with-output-to-string (s)
-    (format-test-label object s)))
-
 (defmethod print-object ((test test) stream)
   ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (print-unreadable-object (test stream :type t :identity t)
-    (format-test-label test stream)))
+    (print-label test stream)))
 
 ;;;; Functional-Test [FIXME: Rename to FUNCTIONAL-TEST]
 
@@ -237,7 +232,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 ;; => 4
 
 
-(defmethod format-test-label ((test lisp-test) (stream stream))
+(defmethod print-label ((test lisp-test) (stream stream))
   ;; FIXME: Refactor onto UTILS:PRETTY-PRINTABLE-OBJECT
   (multiple-value-bind (fn boundp)
       (slot-value* test 'object)

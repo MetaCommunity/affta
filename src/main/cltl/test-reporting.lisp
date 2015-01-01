@@ -9,8 +9,6 @@
     :initarg :test
     :reader test-condition-test)))
 
-(defgeneric format-test-label (test stream))
-
 (defgeneric format-test-results (condition stream))
 
 (define-condition test-result (test-condition)
@@ -26,7 +24,7 @@
   (let ((test (test-condition-test condition)))
     (princ (class-name (class-of condition)) stream)
     (write-char #\Space stream)
-    (format-test-label test stream)
+    (print-label test stream)
     (write-char #\Space stream)
     (format-test-results condition stream)))
 
