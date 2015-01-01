@@ -249,12 +249,21 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (defgeneric default-test-class (container))
 (defgeneric (setf default-test-class) (new-value container))
 
+(defgeneric default-goal-set-class (container))
+(defgeneric (setf default-goal-set-class) (new-value container))
+
+
 (defclass test-suite (definition simple-associative-index associative-object)
   ((default-test-class
        :initarg :default-test-class
      :initform (find-class 'lisp-test)
      :type class-designator 
-     :accessor default-test-class))
+     :accessor default-test-class)
+   (default-goal-set-class
+       :initarg :default-goal-set-class
+     :initform (find-class 'goal-set)
+     :type class-designator
+     :accessor default-goal-set-class)
   (:metaclass simple-associative-class)
   (:key-slot . mcicl.utils::name)
   (:default-initargs :key-function #'object-name))
