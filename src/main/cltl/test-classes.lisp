@@ -173,7 +173,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (declaim (type string %unbound-slot-label%))
 
 (defmethod print-label ((test test) (stream stream))
-  (format stream "[~A] ~A" 
+  (format stream "~A ~<[~A]~>" 
           (class-name (class-of test))
           (slot-value* test 'object %unbound-slot-label%)))
 
@@ -231,12 +231,10 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 
 (defmethod print-label ((test lisp-test) (stream stream))
-  (multiple-value-bind (fn boundp)
-      (slot-value* test 'object)
-    (format stream "~A [~A]" 
-            (class-name (class-of test))
-            (when (and boundp fn)
-              (function-name fn)))))
+  (format stream "~A ~<~<[~A]~> ~<[~A]~>~>" 
+          (class-name (class-of test))
+          (slot-value* test 'object %unbound-slot-label%)
+          (slot-value* test 'lambda-function)))
 
 
 (defgeneric %test-suite-tests (suite))
@@ -268,7 +266,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 (defmethod print-label ((object test-suite) (stream stream))
   (let ((name (ignore-errors (object-name object)))
         (%tests (ignore-errors (object-table object))))
-    (format stream "~A (~A tests)" name 
+    (format stream "~<~A (~A tests)~>" name 
             (when %tests
               (hash-table-count %tests)))))
 
