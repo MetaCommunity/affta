@@ -1,6 +1,6 @@
 ;; test-utils.lisp - utility forms [AFFTA]
 
-(in-package #:info.metacommunity.cltl.test)
+(in-package #:mcicl.test)
 
 (defclass closure-container ()
   ((environment

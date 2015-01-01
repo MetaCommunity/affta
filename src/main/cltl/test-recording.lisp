@@ -1,7 +1,7 @@
 ;; test-record.lisp - test data encapsulation [AFFTA]
 
 
-(in-package #:info.metacommunity.cltl.test)
+(in-package #:mcicl.test)
 
 (defgeneric test-utility-test (test))
 
@@ -14,9 +14,12 @@
 (defvar %default-equivalence-function% #'equalp)
 
 (defgeneric test-predicate (test)
+  #+NIL ;; Remove if not applied
   (:method ((test lisp-test))
+    ;; FIXME: This derives the PREDICATE from a `TEST',
+    ;; and is defined as independent of the class `TEST-GOAL'
     (values %default-equivalence-function%)))
-;; ^ FIXME : Remove (?) or move into test-record.lisp
+;; ^ FIXME : Remove (?) or move into test-record.lisp or test-classes.lisp
 
 
 (defgeneric test-condition (test))
@@ -29,9 +32,8 @@
 
 (defgeneric format-goal-shorthand (goal stream))
 
-;; FIXME: Implement TEST-GOAL
 
-(defclass test-utility ()
+(defclass test-utility () ;; Mixin - TEST container
   ((test
     :initarg :test
     :accessor test-utility-test)))
@@ -106,7 +108,7 @@
     ;; evaluation of the TEST for the specified PARAMETERS.
     :initarg :condition
     :accessor test-condition)
-   (main-values
+   (main-values ;; X ambiguous name [FIXME]
     ;; For a values test:
     ;;
     ;; This slot's value should hold a multiple-value list of the
@@ -118,7 +120,7 @@
     ;;  DO-TEST-CLEANUP. See notes, below)
     :initarg :main-values
     :accessor test-main-values)
-   (setup-values
+   (setup-values ;; X ambiguous name [FIXME]
     ;; This slot's value should hold a multiple-value-list of any
     ;; values returned by the effective DO-TEST-SETUP method for this
     ;; TEST-RECORD  - recorded in the TEST-RECORD primarily for

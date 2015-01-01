@@ -1,6 +1,6 @@
 ;; test-reporting.lisp - Test result reporting [AFFTA]
 
-(in-package #:info.metacommunity.cltl.test)
+(in-package #:mcicl.test)
 
 ;; FIXME: Merge into file test-recording.lisp
 

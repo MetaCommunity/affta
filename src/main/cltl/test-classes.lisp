@@ -5,7 +5,7 @@
 ;;  1. ASSOCIATIVE-INDEX and subclasses
 ;;  2. TEST-SUITE and TEST registry protocol (presently mirroring ASSOCIATIVE-INDEX protocol)
 
-(in-package #:info.metacommunity.cltl.test)
+(in-package #:mcicl.test)
 
 (defgeneric test-object (test))
 (defgeneric (setf test-object) (new-value test))

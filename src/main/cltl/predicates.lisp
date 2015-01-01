@@ -1,6 +1,6 @@
 ;;;; predicates.lisp - redundant PREDICATE class, early prototype
 
-(in-package #:test)
+(in-package #:mcicl.test)
 
 (defclass predicate (closure-container
                      labeled-object

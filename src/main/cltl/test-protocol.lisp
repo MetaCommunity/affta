@@ -1,6 +1,6 @@
 ;; test-protocol.lisp - AFFTA
 
-(in-package #:test)
+(in-package #:mcicl.test)
 
 
 (defgeneric do-test-setup (goal test)

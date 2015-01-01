@@ -3,7 +3,7 @@
 (in-package #:cl-user)
 
 (defpackage #:info.metacommunity.cltl.test
-    (:nicknames #:test)
+    (:nicknames #:mcicl.test)
     ;; #+CLOSER-MOP
     #+NIL 
     (:shadowing-import-from

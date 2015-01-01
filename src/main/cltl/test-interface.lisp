@@ -1,6 +1,6 @@
 ;; test-interface.lisp - interface [AFFTA]
 
-(in-package #:info.metacommunity.cltl.test)
+(in-package #:mcicl.test)
 
 
 #+PROTOTYPE ;; from AFFTA-1.2 [Batch Testing] (?) ;; see README.md
