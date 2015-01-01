@@ -111,6 +111,19 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
     :accessor %test-cleanup-function)
    ))
 
+(define-condition test-not-found (container-condition entity-not-found)
+  ()
+  (:report format-condition))
+
+(defmethod format-condition ((condition test-not-found)
+                             (stream stream))
+  (format stream
+          "No test found for name ~S within suite ~S"
+          (entity-condition-name condition)
+          (object-name (container-condition-container condition))))
+
+
+
 (defmethod test-setup-function ((test test))
   ;;
   ;; (values (or null function) boolean)
@@ -261,6 +274,15 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   (:key-slot . mcicl.utils::name)
   (:default-initargs :key-function #'object-name))
 
+(define-condition test-suite-not-found (entity-not-found)
+  ()
+  (:report format-condition))
+
+(defmethod format-condition ((condition test-suite-not-found)
+                             (stream stream))
+  (format stream
+          "No test suite found for name ~S"
+          (entity-condition-name condition)))
 
 
 (defmethod print-label ((object test-suite) (stream stream))
@@ -280,7 +302,12 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 (defgeneric find-test-suite (name &optional errorp)
   (:method ((name symbol) &optional (errorp t))
-    (find-object name (find-class 'test-suite) errorp)))
+    (let  ((instance
+            (find-object name (find-class 'test-suite) nil)))
+      (cond
+        (instance (values instance))
+        (errorp (error 'test-suite-not-found :name name))
+        (t (values nil))))))
 
 (defgeneric remove-test-suite (instance)
   (:method ((instance test-suite))
@@ -305,9 +332,17 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
       (remove-object test suite))))
 
 (defgeneric find-test (name suite &optional errorp)
+  (:method (name (suite symbol) &optional (errorp t))
+    (let ((suite (find-test-suite suite)))
+      (find-test name suite errorp)))
   (:method ((name symbol) (suite test-suite) &optional (errorp t))
-    (with-lock-held ((%test-suite-test-lock suite)) 
-      (find-object name suite errorp))))
+    (with-lock-held ((%test-suite-test-lock suite))
+      (let ((test (find-object name suite nil)))
+        (cond
+          (test (values test))
+          (errorp (error 'test-not-found
+                         :name name :container suite))
+          (t (values nil)))))))
 
 (defgeneric map-tests (function suite)
   (:method (function (suite test-suite))
