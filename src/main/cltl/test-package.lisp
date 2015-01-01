@@ -47,7 +47,7 @@
      #:test-lambda-function
 
      #:test-suite
-     #:test-suite-default-test-class
+     #:default-test-class
      #:register-test-suite
      #:find-test-suite
      #:remove-test-suite
