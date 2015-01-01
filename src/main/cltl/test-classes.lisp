@@ -310,7 +310,12 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 (defgeneric run-tests (container)
   (:method ((container test-goal-container))
-    (map-goals #'run-tests container)))
+    (let (records) 
+      (labels ((store-record (elt)
+                 (let ((rec (run-tests elt)))
+                   (setf records (push rec records)))))
+        (map-goals #'store-record container)
+        (values (nreverse records))))))
   
 
 (defgeneric compute-goal-class (test container &rest initargs

@@ -52,10 +52,13 @@
     ;; (:cleanup-lamba ()) ;; no-op    
     (:lambda (theta)
       (radians-to-degrees theta))
-    (:predicate #'(lambda (a b) (every= a b)))
+    (:predicate #'every=)
     )
  ))
 
+  ;; FIXME: IF TEST is redefined,
+  ;; ensure that the redefinition will be reflected
+  ;; in any TEST-REFERENCE objects referencing the original TEST.
 
   (describe (find-test 'radians-to-degrees-1 'geometry-test-suite-1))
 
@@ -78,7 +81,9 @@
   (let ((g (find-goal 'pluspi-180 (find-goal 'radians-to-degrees-1.1 
                                              'geometry-test-suite-1))))
     (describe g)
-    (funcall (test-parameters-function g )))
+    (funcall (test-parameters-function g ))
+    #+TO-DO (run-test g)
+    )
 
   (run-test '(geometry-test-suite-1 pluspi-180))
   (run-test '(geometry-test-suite-1 minuspi-minus180 )
