@@ -29,8 +29,19 @@
     (format-test-results condition stream)))
 
 (defmethod format-test-results ((condition test-result) (stream stream))
-  (let ((record (test-result-record condition)))
-    (print-label (ignore-errors (test-goal record)) stream)
+  ;; system may be in an inconsistent state when a test result is printed.
+  (let* ((record (ignore-errors (test-result-record condition)))
+         (goal (ignore-errors (test-goal record)))
+         (test (ignore-errors (test-reference-test goal))))
+
+    #+NIL (print-label (ignore-errors (test-goal record)) stream)
+    (print-label (ignore-errors (object-name test))
+                 stream)
+    #+NIL
+    (write-char #\Space stream)
+    #+NIL
+    (print-label (ignore-errors (test-reference-test goal))
+                 stream)
     (write-string " | " stream)
     (princ (ignore-errors (test-main-values record))
            stream)))

@@ -77,25 +77,35 @@ Example:
    (sqrt (+ (expt a 2) (expt b 2))))
 
  (do-test '((3 4) (5) every=) #'geom-sum)
- => #<TEST-RECORD TEST-SUCCEEDED GEOM-SUM (3 4) =[EVERY=]=> (5) | (5.0)>, #<TEST-SUCCEEDED {1008EF50E3}>"
+ => #<TEST-RECORD TEST-SUCCEEDED GEOM-SUM ANONYMOUS | (5.0)>, #<TEST-SUCCEEDED {1008EF50E3}>"
     ;; FIXME ^ Include that example in the regression tests
     (destructuring-bind (params expect
                                 &optional 
                                 (predicate %default-equivalence-function%))
         goal
       (declare (type function-designator predicate))
+      (setq predicate (coerce predicate 'function))
       (let* ((params-list (mapcar #'(lambda (form)
                                  (declare (ignore form))
                                  (gensym "parameter-"))
                              params))
+             
              (test (make-instance 'lisp-test
+                                  :name 
+                                  (intern-formatted "Anonymous Test ~A"
+                                                    (function-name predicate))
                                   :object test
-                                  :predicate (coerce predicate 'function)
+                                  :predicate predicate
                                   :lambda
                                   `(lambda (,@params-list)
                                      (funcall ,test ,@params-list))))
              (g (make-instance 'lisp-test-goal
                                :test test
+                               :name
+                               (intern-formatted "Anonymous Test Goal ~A =[~A]=> ~A"
+                                                    params 
+                                                    (function-name predicate)
+                                                    expect)
                                :params params
                                :params-function (coerce `(lambda ()
                                                            (list ,@params))
