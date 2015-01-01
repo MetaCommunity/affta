@@ -1,12 +1,6 @@
 ;; info.metacommunity.cltl.test.asd			-*-lisp-*-
 
-(in-package #:cl-user)
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defpackage #:test-system
-    (:use #:asdf #:cl)))
-
-(in-package #:test-system)
+(in-package #:asdf-user)
 
 
 (defsystem #:info.metacommunity.cltl.test
