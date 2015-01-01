@@ -234,6 +234,7 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 
 (defgeneric %test-suite-tests (suite))
+(defgeneric %test-suite-test-lock (suite))
 
 (defgeneric test-suite-default-test-class (suite))
 (defgeneric (setf test-suite-default-test-class) (new-value suite))
@@ -244,13 +245,22 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   ((%tests
     :reader %test-suite-tests
     :initform (make-hash-table :test #'eq))
+   (%tests-lock
+    ;; NB: The TEST-SUITE registry functions will use a lock contained
+    ;; in the the class TEST-SUITE, when accessing the global, top
+    ;; level registry for test suites.
+    ;;
+    ;; This slot provides a lock for test registry within any single
+    ;; test suite.
+    :reader %test-suite-test-lock
+    :initform (make-lock "%tests-lock"))
    (default-test-class
        :initarg :default-test-class
      :initform (find-class 'lisp-test)
      :type class-designator 
      :accessor test-suite-default-test-class))
   (:metaclass associative-class)
-  (:key-slot . utils::name)
+  (:key-slot . mcicl.utils::name)
   (:default-initargs :key-function #'object-name))
 
 
@@ -264,17 +274,17 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
   (declare (ignore print-name print-label))
   (let (args-changedp)
     (when namep
-      (unless (or pnp (slot-boundp instance 'utils::print-name))
+      (unless (or pnp (slot-boundp instance 'mcicl.utils::print-name))
         (setf args-changedp t
               (getf initargs :print-name)
               (symbol-name name)))
-      (unless (or plp (slot-boundp instance 'utils::print-label))
+      (unless (or plp (slot-boundp instance 'mcicl.utils::print-label))
         (setf args-changedp t
               (getf initargs :print-label)
               (symbol-name name))))
     (cond
       (args-changedp (apply #'call-next-method instance slot-names initargs))
-      (t (call-next-metod)))))
+      (t (call-next-method)))))
 
 (defmethod print-label ((object test-suite) (stream stream))
   (let ((name (ignore-errors (object-name object)))
@@ -302,23 +312,27 @@ See also: `DO-TEST-CLEANUP'; `DO-TEST'; `TEST-SETUP-FUNCTION'")
 
 (defgeneric map-test-suites (function)
   (:method (function)
-    (map-tests (coerce function 'function) suite))
+    (map-test-suites (coerce function 'function)))
   (:method ((function function))
-    (map-objects fn (find-class 'test-suite))))
+    (map-objects function (find-class 'test-suite))))
 
 
 (defgeneric add-test (test suite)
   (:method ((test test) (suite test-suite))
-    (register-object test suite)))
+    (with-lock-held ((%test-suite-test-lock suite)) 
+      (register-object test suite))))
 
 (defgeneric remove-test (test suite)
   (:method ((test test) (suite test-suite))
-    (remove-object test suite)))
+    (with-lock-held ((%test-suite-test-lock suite)) 
+      (remove-object test suite))))
 
 (defgeneric find-test (name suite &optional errorp)
   (:method ((name symbol) (suite test-suite) &optional (errorp t))
-    (find-object name suite errorp)))
+    (with-lock-held ((%test-suite-test-lock suite)) 
+      (find-object name suite errorp))))
 
 (defgeneric map-tests (function suite)
   (:method (function (suite test-suite))
-    (map-objects function suite)))
+    (with-lock-held ((%test-suite-test-lock suite)) 
+      (map-objects function suite))))
