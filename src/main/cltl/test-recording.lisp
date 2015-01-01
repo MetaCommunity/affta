@@ -36,6 +36,8 @@
     :initarg :test
     :accessor test-utility-test)))
 
+;; %% Goals for Test Definition
+
 (defclass test-goal (test-utility)
   ;; effectively, a test goal encapsulates a set of parameters for a
   ;; test's _primary test function_
@@ -68,7 +70,7 @@
    ))
 
 (defmethod print-label ((goal lisp-test-goal) (stream stream))
-  (format stream "~<~A =?=> ~A~> (~A)"
+  (format stream "~<~A =?=> ~A~> ~<(~A)~>"
           (test-parameters goal)
           (test-expect-state goal)
           (function-name (test-predicate goal))))
@@ -81,6 +83,8 @@
 (defclass rootfs-test-goal (test-goal)
   ...)
 
+
+;;; % Test Recording
 
 (defclass test-record (test-utility)
   ;; NOTE: TEST-RECORD was defined primarily for application in
