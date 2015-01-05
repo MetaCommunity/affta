@@ -52,13 +52,9 @@
     ;; (:cleanup-lamba ()) ;; no-op    
     (:lambda (theta)
       (radians-to-degrees theta))
-    (:predicate #'every=)
+    (:predicate #'set=)
     )
  ))
-
-  ;; FIXME: IF TEST is redefined,
-  ;; ensure that the redefinition will be reflected
-  ;; in any TEST-REFERENCE objects referencing the original TEST.
 
   (describe (find-test 'radians-to-degrees-1 'geometry-test-suite-1))
 
@@ -90,6 +86,8 @@
 
   (run-test-suite 'geometry-test-suite-1)
 
+  ;; FIXME: Define a *BREAK-ON-FAILURE* flag 
+  ;; and implement within DO-TEST (LISP-TEST-GOAL T)
 
   ;; second prototype:
 
@@ -113,7 +111,7 @@
     (:summary "Test evaluation of COMPUTE-CLASS")
     (:lambda (ident)
       (values (compute-class ident) ident))
-    (:predicate #'every-eq))
+    (:predicate #'set-eq))
 
   (find-test 'compute-class-1 'utils-test-suite-1)
 
