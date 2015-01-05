@@ -58,6 +58,16 @@
            (values boolean))
   (do-seo eq (a b)))
 
+(defun set-equal (a b)
+  (declare (type sequence a b)
+           (values boolean))
+  (do-seo equal (a b)))
+
+(defun set-equalp (a b)
+  (declare (type sequence a b)
+           (values boolean))
+  (do-seo equalp (a b)))
+
 ;;; % Class DEFINITION
 
 (defgeneric definition-summary (object)
