@@ -28,9 +28,13 @@
        ;; DOTIMES instead of EVERY -- with LEN-A and LEN-B already
        ;; available, as needed for this set/elements form.
        ;;
-       ;; NB: A compiler optimization may be defined for the LENGTH calls
-       ;; in this form, for when A and/or B can be determined to be of
-       ;; type VECTOR or SIMPLE-ARRAY [SBCL 1.2.6]
+       ;; NB: A compiler optimization may be defined for the LENGTH
+       ;; and ELT calls in this form, for when A and/or B can be
+       ;; determined to be type VECTOR or SIMPLE-ARRAY [SBCL
+       ;; 1.2.6]. Perhaps that may behoove a design for a method for
+       ;; dispatching optimizations. Alternately, this may be
+       ;; implemented within a generic function in which the types of
+       ;; A and B would be more specificall defined
        (and (= ,len-a ,len-b)
             (dotimes (,n ,len-a t)
               (unless (funcall (function ,op) (elt ,%a ,n) (elt ,%b ,n))
@@ -44,7 +48,9 @@
 
 ;; (set= '(1.0 2.0) '(1 2.0d0))
 ;; => T
-;; ;; (set= '(1.0 2.0) '(1 2.0d0 3))
+;; (set= '(1.0 2.0) '(1 2.0d0 3))
+;; => NIL
+;; (set= '(1.0 3.0) '(1 2.0d0))
 ;; => NIL
 
 
