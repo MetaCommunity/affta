@@ -21,15 +21,15 @@
            (,len-b (length b)))
        (declare (type unsigned-byte ,len-a ,len-b)
                 (inline ,op))
-       ;; NB: This might avert some compiler optimizations, however
-       ;; for this generic instance, those might not be well
-       ;; applicable anyway. Notably, SBCL converts an EVERY call to a
-       ;; MAP call. perhaps there may be not much of an optimization lost 
-       ;; in this alternate approach of using DOTIMES instead of EVERY,
-       ;; then LEN-A and LEN-B already being available.
+       ;; NB: This might avert some compiler transformations, in using
+       ;; DOTIMES instead of EVERY. Notably, SBCL converts an EVERY
+       ;; call to a MAP call. Perhaps there may be not much of an
+       ;; optimization lost, in this alternate approach of using
+       ;; DOTIMES instead of EVERY -- with LEN-A and LEN-B already
+       ;; available, as needed for this set/elements form.
        ;;
        ;; NB: A compiler optimization may be defined for the LENGTH calls
-      ;; in this form, for when A and/or B can be determined to be of
+       ;; in this form, for when A and/or B can be determined to be of
        ;; type VECTOR or SIMPLE-ARRAY [SBCL 1.2.6]
        (and (= ,len-a ,len-b)
             (dotimes (,n ,len-a t)
