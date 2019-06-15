@@ -22,8 +22,10 @@ AFFTA 1.3 depends on the following systems:
 
 [FIXME: Review "HOW". Document, here, at least with some short remarks]
 
-* [info.metacommunity.cltl.utils][mci-cltl-utils]
-* [info.metacommunity.cltl.utils.mop][mci-cltl-utils]
+**Ed. Note: These references are outdated**
+
+* [info.metacommunity.cltl.utils][ltp-main-src]
+* [info.metacommunity.cltl.utils.mop][ltp-main-src]
 
 ## Licensing
 
@@ -38,25 +40,18 @@ dual mode licensing schemes developed in some other projects.]
 
 ## Availability
 
-The [primary source tree for AFFTA][affta] is hosted at [GitHub](http://www.github.com/).
+The [primary source tree for AFFTA][affta-src] is hosted at [GitHub](http://www.github.com/).
 
-Git URL (SSH): [git@github.com:MetaCommunity/affta.git](git@github.com:MetaCommunity/affta.git)
-
-[FIXME: This will be revised after formalized adoption of the AFFTA
-source code and management responsibility under the Thinkum Labs GitHub
-group. That should be accompanied with adoption of the LTP source code
--- previously, MetaCommunity cltl-utils -- to the latter.]
+Git URL (SSH): [git@github.com:thinkum/affta.git][affta-src]
 
 
 ## Reference
 
-[FIXME: This is, at best, an early draft for a formal reference manual,
-such that should be developed in a more structurally robust document
-format.]
+**Ed. Note: Oudated Design Documentation**
 
 ### Overview
 
-The [AFFTA][affta] test system is defined to address two primary
+The [AFFTA-SRC][affta-src] test system is defined to address two primary
 _usage cases_ for functional systems testing, in a context of systems
 development.
 
@@ -195,8 +190,8 @@ For the following, a general sense of _style of testing methodology_ is introduc
         * Development Metrics [FIXME: This is not a project micromanagement system]
 
 
-Although [AFFTA][affta] was defined initially for testing of Common
-Lisp source code, the functional interface for [AFFTA][affta] has been
+Although [AFFTA-SRC][affta-src] was defined initially for testing of Common
+Lisp source code, the functional interface for [AFFTA-SRC][affta-src] has been
 defined such that it may be applied for procedures of structured
 systems testing, for evaluation of components not defined in Common
 Lisp.
@@ -204,11 +199,11 @@ Lisp.
 
 ### Test Protocol - Concepts - Overview
 
-[AFFTA][affta] provides an object-oriented framework for functional
+[AFFTA-SRC][affta-src] provides an object-oriented framework for functional
 testing, such as would be applied within a Common Lisp programming
 environment. [Ed. NB: Refer to JUnit, at least in the bibliography.]
 
-In [AFFTA][affta], a _test_ is defined with a _main function_.
+In [AFFTA-SRC][affta-src], a _test_ is defined with a _main function_.
 Furthermore, a _setup function_ and/or a _cleanup function_ may also
 be defined to a _test_ `;;; FIXME:` Should also allow definition
 of _cleanup function_ and _setup function_ to a _test suite_, such
@@ -451,7 +446,7 @@ the Markdown format]
 
 #### Test Recording Concepts
 
-In [AFFTA][affta] a _test record_  will contain the following features:
+In [AFFTA-SRC][affta-src] a _test record_  will contain the following features:
 
 * Reference to _goal object_ provided for _test_
 * Reference to _condition object_, as would be initialized either in
@@ -555,21 +550,8 @@ note also, the Mylyn framework in the Eclipse platform]
 
 ### Examples in Application (Early Edition)
 
-[FIXME: Revise this section of the documentation]. The first of the
-following projects might be considered _obsolete_ or rather _sandboxed_,
-although it might serve to provide something of an example of AFFTA
-1.2/AFFTA 1.3 in application]
+**Ed. Note:** This system is still in early design.
 
-* [Igneous-Math](https://github.com/MetaCommunity/igneous-math)
-    * [`measure-test.lisp`](https://github.com/MetaCommunity/igneous-math/blob/master/src/test/cltl/measure-test.lisp)
-* [MCi CLtL Utilities](https://github.com/MetaCommunity/mci-cltl-utils)
-    * [MCi MOP Utilities](https://github.com/MetaCommunity/mci-cltl-utils/tree/master/src/main/cltl/mop) - _TO DO_
-* [AFFTA][affta] itself
-
-
-[FIXME: Introduce a historic review of some systems - to include, ECMA
-PCTE, NIST ALPS, and the build system in use at SRI during the GFP
-initiative. TBD: Testing for C++ software, in ACE/TAO]
 
 ## Development Plan
 
@@ -674,12 +656,12 @@ changelogs, etc.]
                 * **Defining Tests - Concepts**
                     * Test Components
                         * Overview
-                            * In concepts developed within [AFFTA], a _test_, once applied, is comprised of a _test object_, a _test goal_, and a _test record_.
+                            * In concepts developed within [AFFTA-SRC], a _test_, once applied, is comprised of a _test object_, a _test goal_, and a _test record_.
                                 * A _test object_ represents a _form_ defined for purpose of evaluating the behaviors of a software system, for conformance with behaviors expected of the software system, by the system's developers. In addition to the lisp _form_ of a _test object_, a _test object_  may also be represented of additional _test utility_ _resources_ essentially external to the _Lisp environment_.
                                 * A _test goal_ represents a set of parameters to a _test object_, as well as an expected _result condition_, contingent on successful evaluation of the _test object_. (In the instance of a simple, functional Lisp program test, for a _functional test_ `B` designed as to test the behaviors of a function `A`,  the set of _parameters_ to a _functional_ _test goal_ `G` onto `B` is represented simply of a list of arguments for the function `A`; the _result condition_ for `G`  onto `B` would be represented of a list of _values_ that the function `A` would be expected to return.)
-                                * A _test record_ represents an instance of the evaluation of a _test_ with a single _test goal_ object. (In [AFFTA], a _test record_ for a simple, functional Lisp program test will store any condition objects representing a non-local exit of control from within the _test main form_)
-                            * [AFFTA] is designed around a concept of _separation of concerns_ for definition of _test_ objects, _test goal_ objects, and _test record_ objects.
-                            * TO DO: [AFFTA] must also define a concept of a _test suite_, such that should be well integrated within the Lisp environment's system definition facility, _viz a viz_ ASDF - as well as to be accessed from a functional interface, _viz a viz_ `CURRENT-TEST-SUITE`
+                                * A _test record_ represents an instance of the evaluation of a _test_ with a single _test goal_ object. (In [AFFTA-SRC], a _test record_ for a simple, functional Lisp program test will store any condition objects representing a non-local exit of control from within the _test main form_)
+                            * [AFFTA-SRC] is designed around a concept of _separation of concerns_ for definition of _test_ objects, _test goal_ objects, and _test record_ objects.
+                            * TO DO: [AFFTA-SRC] must also define a concept of a _test suite_, such that should be well integrated within the Lisp environment's system definition facility, _viz a viz_ ASDF - as well as to be accessed from a functional interface, _viz a viz_ `CURRENT-TEST-SUITE`
                         * Test Metadata
                             * {Sidebar: Test metadata must be defined such as to be displayed in any medium in which a test may "probably" be evaluated, e.g test stream for a REPL, if not a full IDE}
                             * Object Naming in AFFTA
@@ -814,11 +796,11 @@ changelogs, etc.]
 
 
 [EPL]: https://www.eclipse.org/legal/epl-v10.html
-[affta]: https://github.com/MetaCommunity/affta
-[mci-cltl-utils]: https://github.com/MetaCommunity/mci-cltl-utils
+[affta-src]: https://github.com/thinkum/affta
+[ltp-main-src]: https://github.com/thinkum/ltp-main
 [test-protocol]: src/main/cltl/test-protocol.lisp
 [test-protocol]: src/main/cltl/test-recording.lisp
-[dobelle-app]: https://github.com/MetaCommunity/dobelle-app
+[dobelle]: https://github.com/thinkum/dobelle
 [ASDF]: http://common-lisp.net/project/asdf/
 [mvn]: http://maven.apache.org/
 
@@ -839,7 +821,7 @@ changelogs, etc.]
 <!--  LocalWords:  SBCL src
  -->
 
-<!-- FIXME ... -->
+<!-- FIXME - Merge LocalWords text -->
 
 <!-- Local Variables: -->
 <!-- ispell-buffer-session-localwords: ("Kannel" "NIST" "NST" "PCTE" "SDN" "SRI" "Servlets" "ToC" "changelogs" "pkgsrc" "sandboxed" "virtualization" "vis") -->
