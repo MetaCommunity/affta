@@ -797,7 +797,7 @@ changelogs, etc.]
 
 [EPL]: https://www.eclipse.org/legal/epl-v10.html
 [affta-src]: https://github.com/thinkum/affta
-[ltp-main-src]: https://github.com/thinkum/ltp-main
+[ltp-main-src]: https://github.com/thinkum/ltp
 [test-protocol]: src/main/cltl/test-protocol.lisp
 [test-protocol]: src/main/cltl/test-recording.lisp
 [dobelle]: https://github.com/thinkum/dobelle
